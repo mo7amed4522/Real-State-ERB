@@ -1,0 +1,521 @@
+scalar Time
+scalar Upload
+
+type Building {
+    id: ID!
+    title: String!
+    description: String
+    latitude: Float!
+    longitude: Float!
+    address: String!
+    city: String!
+    region: String!
+    price: Float!
+    status: String!
+    sold_at: String
+    company_id: ID!
+    developer_id: ID!
+    total_likes: Int!
+    total_comments: Int!
+    total_views: Int!
+    created_at: String!
+    is_liked: Boolean
+    photos: [String!]!
+    companyID: Int!
+    likesCount: Int!
+    commentsCount: Int!
+    updatedAt: Time!
+}
+
+type Query {
+    building(id: ID!): Building
+    buildings(city: String, region: String): [Building]
+    likes: [Like!]!
+    comments: [Comment!]!
+    
+    # Chat queries
+    getRoomsByUser: [ChatRoom!]!
+    getRoomByID(roomID: ID!): ChatRoom
+    getMessages(roomID: ID!, limit: Int, offset: Int): [ChatMessage!]!
+    getFolders(roomID: ID!): [ChatFolder!]!
+    getNotifications: [ChatNotification!]!
+    searchMessages(roomID: ID!, query: String!): [ChatMessage!]!
+    getMessageStats(roomID: ID!): MessageStats!
+    
+    # Financial queries
+    getSaleTransactions(buildingId: ID, buyerId: ID, sellerId: ID, agentId: ID, status: String, startDate: String, endDate: String): [SaleTransaction!]!
+    getLeaseContracts(propertyId: ID, tenantId: ID, landlordId: ID, status: String, activeOnly: Boolean): [LeaseContract!]!
+    getOffers(buildingId: ID, companyId: ID, activeOnly: Boolean): [Offer!]!
+}
+
+type Mutation {
+    createBuilding(input: CreateBuildingInput!): Building!
+    updateBuilding(id: ID!, input: UpdateBuildingInput!): Building!
+    deleteBuilding(id: ID!): Boolean!
+    
+    createLike(input: CreateLikeInput!): Like!
+    deleteLike(id: ID!): Boolean!
+    
+    createComment(input: CreateCommentInput!): Comment!
+    updateComment(id: ID!, input: UpdateCommentInput!): Comment!
+    deleteComment(id: ID!): Boolean!
+    
+    # Chat mutations
+    createRoom(input: CreateRoomInput!): ChatRoom!
+    sendMessage(input: SendMessageInput!): ChatMessage!
+    editMessage(input: EditMessageInput!): ChatMessage!
+    deleteMessage(messageID: ID!): Boolean!
+    uploadFile(input: UploadFileInput!): ChatAttachment!
+    downloadFile(attachmentID: ID!): FileDownload!
+    addReaction(input: AddReactionInput!): ChatReaction!
+    removeReaction(input: RemoveReactionInput!): Boolean!
+    createFolder(input: CreateFolderInput!): ChatFolder!
+    markNotificationAsRead(notificationID: ID!): Boolean!
+    
+    # Financial mutations
+    createSaleTransaction(input: CreateSaleTransactionInput!): SaleTransaction!
+    updateSaleTransactionStatus(id: ID!, status: String!): SaleTransaction!
+    createLeaseContract(input: CreateLeaseContractInput!): LeaseContract!
+    updateLeaseStatus(id: ID!, status: String!): LeaseContract!
+    createLeasePayment(input: CreateLeasePaymentInput!): LeasePayment!
+    updatePaymentStatus(id: ID!, status: String!): LeasePayment!
+    createOffer(input: CreateOfferInput!): Offer!
+    useOffer(code: String!, userId: ID!, amount: Float!): OfferUse!
+    generateFinancialReport(reportType: String!, periodStart: String!, periodEnd: String!, generatedBy: ID!): FinancialReport!
+}
+
+type Subscription {
+    buildingAdded: Building!
+    messageAdded(roomID: ID!): ChatMessage!
+}
+
+input CreateBuildingInput {
+    title: String!
+    description: String!
+    price: Float!
+    location: String!
+    latitude: Float
+    longitude: Float
+    photos: [String!]!
+    companyID: Int!
+}
+
+input UpdateBuildingInput {
+    title: String
+    description: String
+    price: Float
+    location: String
+    latitude: Float
+    longitude: Float
+    photos: [String!]
+    companyID: Int
+}
+
+# Like types
+type Like {
+    id: ID!
+    buildingID: Int!
+    userID: String!
+    createdAt: Time!
+}
+
+input CreateLikeInput {
+    buildingID: Int!
+    userID: String!
+}
+
+# Comment types
+type Comment {
+    id: ID!
+    buildingID: Int!
+    userID: String!
+    content: String!
+    parentID: Int
+    createdAt: Time!
+    updatedAt: Time!
+}
+
+input CreateCommentInput {
+    buildingID: Int!
+    userID: String!
+    content: String!
+    parentID: Int
+}
+
+input UpdateCommentInput {
+    content: String!
+}
+
+# Financial Types
+type SaleTransaction {
+    id: ID!
+    buildingId: ID!
+    buyerId: ID!
+    sellerId: ID!
+    agentId: ID
+    price: Float!
+    paymentMethod: String!
+    status: String!
+    commission: Float!
+    taxAmount: Float!
+    fees: Float!
+    totalAmount: Float!
+    notes: String
+    createdAt: Time!
+    updatedAt: Time!
+    completedAt: Time
+    building: Building!
+    buyer: User!
+    seller: User!
+    agent: User
+    documents: [TransactionDocument!]!
+}
+
+type LeaseContract {
+    id: ID!
+    propertyId: ID!
+    tenantId: ID!
+    landlordId: ID!
+    agentId: ID
+    durationMonths: Int!
+    startDate: Time!
+    endDate: Time!
+    monthlyRent: Float!
+    depositAmount: Float!
+    paymentFrequency: String!
+    status: String!
+    contractFileUrl: String
+    contractFileKey: String
+    utilitiesIncluded: Boolean!
+    petAllowed: Boolean!
+    furnished: Boolean!
+    lateFeeAmount: Float!
+    gracePeriodDays: Int!
+    notes: String
+    createdAt: Time!
+    updatedAt: Time!
+    signedAt: Time
+    terminatedAt: Time
+    property: Property!
+    tenant: User!
+    landlord: User!
+    agent: User
+    payments: [LeasePayment!]!
+    documents: [LeaseDocument!]!
+}
+
+type LeasePayment {
+    id: ID!
+    leaseId: ID!
+    amount: Float!
+    paymentDate: Time!
+    dueDate: Time!
+    status: String!
+    paymentMethod: String!
+    lateFee: Float!
+    notes: String
+    createdAt: Time!
+    updatedAt: Time!
+    lease: LeaseContract!
+}
+
+type Offer {
+    id: ID!
+    title: String!
+    description: String!
+    discountPercent: Int!
+    discountAmount: Float
+    startDate: Time!
+    endDate: Time!
+    buildingId: ID
+    companyId: ID
+    imageUrl: String
+    termsConditions: String
+    isActive: Boolean!
+    maxUses: Int!
+    currentUses: Int!
+    minAmount: Float!
+    maxAmount: Float!
+    code: String!
+    createdAt: Time!
+    updatedAt: Time!
+    building: Building
+    company: Company
+    uses: [OfferUse!]!
+}
+
+type OfferUse {
+    id: ID!
+    offerId: ID!
+    userId: ID!
+    amount: Float!
+    discount: Float!
+    usedAt: Time!
+    offer: Offer!
+    user: User!
+}
+
+type TransactionDocument {
+    id: ID!
+    transactionId: ID!
+    documentType: String!
+    fileName: String!
+    fileUrl: String!
+    fileKey: String!
+    fileSize: Int!
+    uploadedAt: Time!
+    transaction: SaleTransaction!
+}
+
+type LeaseDocument {
+    id: ID!
+    leaseId: ID!
+    documentType: String!
+    fileName: String!
+    fileUrl: String!
+    fileKey: String!
+    fileSize: Int!
+    uploadedAt: Time!
+    lease: LeaseContract!
+}
+
+type FinancialReport {
+    id: ID!
+    reportType: String!
+    periodStart: Time!
+    periodEnd: Time!
+    totalSales: Float!
+    totalRentals: Float!
+    totalRevenue: Float!
+    totalCommissions: Float!
+    totalTaxes: Float!
+    totalFees: Float!
+    reportData: String!
+    generatedAt: Time!
+    generatedBy: ID!
+    generatedByUser: User!
+}
+
+# Financial Input Types
+input CreateSaleTransactionInput {
+    buildingId: ID!
+    buyerId: ID!
+    sellerId: ID!
+    agentId: ID
+    price: Float!
+    paymentMethod: String!
+    commission: Float!
+    taxAmount: Float!
+    fees: Float!
+    notes: String
+}
+
+input CreateLeaseContractInput {
+    propertyId: ID!
+    tenantId: ID!
+    landlordId: ID!
+    agentId: ID
+    durationMonths: Int!
+    startDate: String!
+    monthlyRent: Float!
+    depositAmount: Float!
+    paymentFrequency: String!
+    utilitiesIncluded: Boolean!
+    petAllowed: Boolean!
+    furnished: Boolean!
+    lateFeeAmount: Float!
+    gracePeriodDays: Int!
+    notes: String
+}
+
+input CreateLeasePaymentInput {
+    leaseId: ID!
+    amount: Float!
+    paymentDate: String!
+    dueDate: String!
+    paymentMethod: String!
+    notes: String
+}
+
+input CreateOfferInput {
+    title: String!
+    description: String!
+    discountPercent: Int!
+    discountAmount: Float
+    startDate: String!
+    endDate: String!
+    buildingId: ID
+    companyId: ID
+    imageUrl: String
+    termsConditions: String
+    maxUses: Int!
+    minAmount: Float!
+    maxAmount: Float!
+    code: String
+}
+
+# Chat types
+type ChatRoom {
+    id: ID!
+    name: String!
+    description: String!
+    type: String!
+    createdBy: Int!
+    createdAt: Time!
+    updatedAt: Time!
+    participants: [ChatParticipant!]!
+    messages: [ChatMessage!]!
+}
+
+type ChatParticipant {
+    id: ID!
+    roomID: Int!
+    userID: Int!
+    userType: String!
+    role: String!
+    joinedAt: Time!
+    isActive: Boolean!
+    room: ChatRoom!
+}
+
+type ChatMessage {
+    id: ID!
+    roomID: Int!
+    senderID: Int!
+    senderType: String!
+    content: String!
+    messageType: String!
+    replyToID: Int
+    referenceID: Int
+    isEdited: Boolean!
+    isDeleted: Boolean!
+    createdAt: Time!
+    updatedAt: Time!
+    room: ChatRoom!
+    attachments: [ChatAttachment!]!
+    reactions: [ChatReaction!]!
+    replyTo: ChatMessage
+    referenced: ChatMessage
+}
+
+type ChatAttachment {
+    id: ID!
+    messageID: Int!
+    fileName: String!
+    fileType: String!
+    fileSize: Int!
+    encryptedPath: String!
+    encryptedKey: String!
+    uploadedAt: Time!
+    message: ChatMessage!
+}
+
+type ChatReaction {
+    id: ID!
+    messageID: Int!
+    userID: Int!
+    userType: String!
+    emoji: String!
+    createdAt: Time!
+    message: ChatMessage!
+}
+
+type ChatFolder {
+    id: ID!
+    roomID: Int!
+    name: String!
+    description: String!
+    parentID: Int
+    createdBy: Int!
+    createdAt: Time!
+    updatedAt: Time!
+    room: ChatRoom!
+    parent: ChatFolder
+    children: [ChatFolder!]!
+    files: [ChatAttachment!]!
+}
+
+type ChatNotification {
+    id: ID!
+    userID: Int!
+    userType: String!
+    roomID: Int!
+    type: String!
+    message: String!
+    isRead: Boolean!
+    createdAt: Time!
+    room: ChatRoom!
+}
+
+type FileDownload {
+    data: String!
+    filename: String!
+}
+
+type MessageStats {
+    totalMessages: Int!
+    todayMessages: Int!
+    totalFiles: Int!
+}
+
+# Chat input types
+input CreateRoomInput {
+    name: String!
+    description: String!
+    type: String!
+    participantIds: [Int!]!
+}
+
+input SendMessageInput {
+    roomId: String!
+    content: String!
+    messageType: String!
+    replyToId: String
+    referenceId: String
+}
+
+input EditMessageInput {
+    messageId: String!
+    newContent: String!
+}
+
+input UploadFileInput {
+    messageId: String!
+    file: Upload!
+}
+
+input AddReactionInput {
+    messageId: String!
+    emoji: String!
+}
+
+input RemoveReactionInput {
+    messageId: String!
+}
+
+input CreateFolderInput {
+    roomId: String!
+    name: String!
+    description: String!
+    parentId: String
+}
+
+# Additional types needed for financial system
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+type Property {
+    id: ID!
+    title: String!
+    description: String!
+    price: Float!
+}
+
+type Company {
+    id: ID!
+    name: String!
+    description: String!
+} 

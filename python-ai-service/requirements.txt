@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+kafka-python
+psycopg2-binary
+transformers
+torch
+cryptography
+sentencepiece
+Pillow
+numpy
+pydantic
+# Add other AI/ML libraries here, for example:
+# scikit-learn
+# tensorflow
+# torch 

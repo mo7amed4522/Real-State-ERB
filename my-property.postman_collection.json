@@ -1,0 +1,1180 @@
+{
+	"info": {
+		"_postman_id": "a9e6b528-2a78-4a94-8a4a-0a758e5a7b69",
+		"name": "My Property Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GraphQL",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Register($registerInput: RegisterInput!) {\n  register(registerInput: $registerInput) {\n    id\n    email\n    firstName\n    lastName\n  }\n}",
+								"variables": "{\n  \"registerInput\": {\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login (Local)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Login($loginInput: LoginInput!) {\n  login(loginInput: $loginInput) {\n    id\n    email\n    firstName\n    lastName\n  }\n}",
+								"variables": "{\n  \"loginInput\": {\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Me (Protected)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query Me {\n  me {\n    id\n    email\n    firstName\n    lastName\n    photoUrl\n    phoneNumber\n    gender\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateUser($updateUserInput: UpdateUserInput!) {\n  updateUser(updateUserInput: $updateUserInput) {\n    id\n    firstName\n    lastName\n    phoneNumber\n    gender\n  }\n}",
+								"variables": "{\n  \"updateUserInput\": {\n    \"firstName\": \"UpdatedFirst\",\n    \"lastName\": \"UpdatedLast\",\n    \"phoneNumber\": \"1234567890\",\n    \"gender\": \"other\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation DeleteUser {\n  deleteUser\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation ForgotPassword($forgotPasswordInput: ForgotPasswordInput!) {\n  forgotPassword(forgotPasswordInput: $forgotPasswordInput)\n}",
+								"variables": "{\n  \"forgotPasswordInput\": {\n    \"email\": \"test@example.com\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation ResetPassword($resetPasswordInput: ResetPasswordInput!) {\n  resetPassword(resetPasswordInput: $resetPasswordInput) {\n    id\n    email\n  }\n}",
+								"variables": "{\n  \"resetPasswordInput\": {\n    \"token\": \"PASTE_TOKEN_FROM_FORGOT_PASSWORD_RESPONSE_HERE\",\n    \"password\": \"newSecurePassword123\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password (Authenticated)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation ChangePassword($changePasswordInput: ChangePasswordInput!) {\n  changePassword(changePasswordInput: $changePasswordInput)\n}",
+								"variables": "{\n  \"changePasswordInput\": {\n    \"oldPassword\": \"password123\",\n    \"newPassword\": \"newSecurePassword1234\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users (Admin Only)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query AllUsers {\n  allUsers {\n    id\n    email\n    roles\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Profile Picture",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "operations",
+									"value": "{ \"query\": \"mutation ($file: Upload!) { uploadProfilePicture(file: $file) { id photoUrl } }\", \"variables\": { \"file\": null } }",
+									"type": "text"
+								},
+								{
+									"key": "map",
+									"value": "{ \"0\": [\"variables.file\"] }",
+									"type": "text"
+								},
+								{
+									"key": "0",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						},
+						"description": "To use this in Postman:\n\n1. Keep the Body type as `form-data`.\n2. Do NOT change the `operations` or `map` fields.\n3. In the `0` field, click 'Select Files' and choose the image you want to upload.\n4. Make sure you are logged in first (run the Login mutation) so your session cookie is sent."
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Favorite Property",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation($propertyId: Int!) { toggleFavoriteProperty(propertyId: $propertyId) { id favoriteProperties { id } } }",
+								"variables": "{\n  \"propertyId\": 1\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation($propertyId: Int!, $content: String!) { createComment(propertyId: $propertyId, content: $content) { id content userId createdAt } }",
+								"variables": "{\n  \"propertyId\": 1,\n  \"content\": \"This is a great property!\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Comment Like",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation($commentId: Int!) { toggleCommentLike(commentId: $commentId) { id likedComments { id } } }",
+								"variables": "{\n  \"commentId\": 1\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reply to Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation($propertyId: Int!, $content: String!, $parentId: Int) { createComment(propertyId: $propertyId, content: $content, parentId: $parentId) { id content userId parentId createdAt } }",
+								"variables": "{\n  \"propertyId\": 1,\n  \"content\": \"This is a reply!\",\n  \"parentId\": 1\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Interactions",
+					"item": [
+						{
+							"name": "Create Building",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation CreateBuilding($createBuildingInput: CreateBuildingInput!) {\n  createBuilding(createBuildingInput: $createBuildingInput) {\n    id\n    title\n    location\n    price\n    company_id\n    developer_id\n  }\n}",
+										"variables": "{\n  \"createBuildingInput\": {\n    \"title\": \"Luxury Apartment\",\n    \"location\": \"Downtown\",\n    \"price\": 500000,\n    \"company_id\": \"PASTE_COMPANY_ID\",\n    \"developer_id\": \"PASTE_DEVELOPER_ID\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Building",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query Building($id: ID!) {\n  building(id: $id) {\n    id\n    title\n    location\n    price\n    status\n    sold_at\n  }\n}",
+										"variables": "{\n  \"id\": \"PASTE_BUILDING_ID\"\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Building",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation UpdateBuilding($updateBuildingInput: UpdateBuildingInput!) {\n  updateBuilding(updateBuildingInput: $updateBuildingInput) {\n    id\n    title\n    status\n  }\n}",
+										"variables": "{\n  \"updateBuildingInput\": {\n    \"id\": \"PASTE_BUILDING_ID\",\n    \"title\": \"Renovated Luxury Apartment\",\n    \"status\": \"SOLD\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Building",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation RemoveBuilding($id: ID!) {\n  removeBuilding(id: $id)\n}",
+										"variables": "{\n  \"id\": \"PASTE_BUILDING_ID\"\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Offer",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation CreateOffer($createOfferInput: CreateOfferInput!) {\n  createOffer(createOfferInput: $createOfferInput) {\n    id\n    offer_price\n    status\n  }\n}",
+										"variables": "{\n  \"createOfferInput\": {\n    \"company_id\": \"PASTE_COMPANY_ID\",\n    \"developer_id\": \"PASTE_DEVELOPER_ID\",\n    \"building_id\": \"PASTE_BUILDING_ID\",\n    \"offer_price\": 480000,\n    \"offer_date\": \"2024-01-15T10:00:00.000Z\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Offer",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query Offer($id: ID!) {\n  offer(id: $id) {\n    id\n    offer_price\n    offer_date\n    status\n    accepted_date\n  }\n}",
+										"variables": "{\n  \"id\": \"PASTE_OFFER_ID\"\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Offer",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation UpdateOffer($updateOfferInput: UpdateOfferInput!) {\n  updateOffer(updateOfferInput: $updateOfferInput) {\n    id\n    status\n    accepted_date\n  }\n}",
+										"variables": "{\n  \"updateOfferInput\": {\n    \"id\": \"PASTE_OFFER_ID\",\n    \"status\": \"ACCEPTED\",\n    \"accepted_date\": \"2024-01-20T14:30:00.000Z\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Offer",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation RemoveOffer($id: ID!) {\n  removeOffer(id: $id)\n}",
+										"variables": "{\n  \"id\": \"PASTE_OFFER_ID\"\n}"
+									}
+								},
+								"url": {
+									"raw": "http://localhost/api/graphql",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"path": [
+										"api",
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "GraphQL API Endpoints"
+		},
+		{
+			"name": "Auth (REST)",
+			"item": [
+				{
+					"name": "Login with Google",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/google",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"google"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Standard REST endpoints for authentication"
+		},
+		{
+			"name": "Go Service (Buildings)",
+			"item": [
+				{
+					"name": "Get Buildings",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query { buildings { id title city price } }"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/properties/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"properties",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Building",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateBuilding($title: String!, $description: String, $latitude: Float!, $longitude: Float!, $address: String!, $city: String!, $region: String!, $price: Float!, $company_id: Int!, $developer_id: Int!) {\n  createBuilding(title: $title, description: $description, latitude: $latitude, longitude: $longitude, address: $address, city: $city, region: $region, price: $price, company_id: $company_id, developer_id: $developer_id) {\n    id\n    title\n  }\n}",
+								"variables": "{\n  \"title\": \"GoLang Tower\",\n  \"description\": \"A new tower built with Go!\",\n  \"latitude\": 25.1972,\n  \"longitude\": 55.2744,\n  \"address\": \"1 Sheikh Mohammed bin Rashid Blvd\",\n  \"city\": \"Dubai\",\n  \"region\": \"Downtown Dubai\",\n  \"price\": 1200000,\n  \"company_id\": 1,\n  \"developer_id\": 1\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/properties/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"properties",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listen for New Buildings (WebSocket)",
+					"request": {
+						"method": "WEBSOCKET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "subscription { buildingAdded { id title city price } }"
+							}
+						},
+						"url": {
+							"raw": "ws://localhost/api/properties/ws",
+							"protocol": "ws",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"properties",
+								"ws"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Developer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation CreateDeveloper($createDeveloperInput: CreateDeveloperInput!) {\n  createDeveloper(createDeveloperInput: $createDeveloperInput) {\n    id\n    full_name\n    email\n    status\n  }\n}",
+						"variables": "{\n  \"createDeveloperInput\": {\n    \"full_name\": \"John Doe Developer\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+971501234567\",\n    \"license_number\": \"D-987654\",\n    \"experience_years\": 5,\n    \"specialization\": \"Off-plan Properties\"\n  }\n}"
+					}
+				},
+				"url": { "raw": "http://localhost/api/graphql", "protocol": "http", "host": ["localhost"], "path": ["api", "graphql"] }
+			},
+			"response": []
+		},
+		{
+			"name": "Get Developer by ID",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query GetDeveloper($id: ID!) {\n  developer(id: $id) {\n    id\n    full_name\n    email\n    phone\n    experience_years\n    specialization\n    status\n  }\n}",
+						"variables": "{\n  \"id\": \"YOUR_DEVELOPER_ID\"\n}"
+					}
+				},
+				"url": { "raw": "http://localhost/api/graphql", "protocol": "http", "host": ["localhost"], "path": ["api", "graphql"] }
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Developers",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "{\n  developers {\n    id\n    full_name\n    status\n  }\n}"
+					}
+				},
+				"url": { "raw": "http://localhost/api/graphql", "protocol": "http", "host": ["localhost"], "path": ["api", "graphql"] }
+			},
+			"response": []
+		},
+		{
+			"name": "Update Developer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation UpdateDeveloper($updateDeveloperInput: UpdateDeveloperInput!) {\n  updateDeveloper(updateDeveloperInput: $updateDeveloperInput) {\n    id\n    full_name\n    status\n  }\n}",
+						"variables": "{\n  \"updateDeveloperInput\": {\n    \"id\": \"YOUR_DEVELOPER_ID\",\n    \"status\": \"Verified\"\n  }\n}"
+					}
+				},
+				"url": { "raw": "http://localhost/api/graphql", "protocol": "http", "host": ["localhost"], "path": ["api", "graphql"] }
+			},
+			"response": []
+		},
+		{
+			"name": "Add Company Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "operations",
+							"value": "{\"query\":\"mutation AddCompanyDocument($companyId: ID!, $file: Upload!, $documentType: DocumentType!) { addCompanyDocument(companyId: $companyId, file: $file, documentType: $documentType) { id file_url verified } }\",\"variables\":{\"companyId\":\"YOUR_COMPANY_ID\",\"file\":null,\"documentType\":\"VAT\"}}",
+							"type": "text"
+						},
+						{
+							"key": "map",
+							"value": "{\"docFile\":[\"variables.file\"]}",
+							"type": "text"
+						},
+						{
+							"key": "docFile",
+							"type": "file",
+							"src": "/path/to/your/new_document.pdf"
+						}
+					]
+				},
+				"url": { "raw": "http://localhost/api/graphql", "protocol": "http", "host": ["localhost"], "path": ["api", "graphql"] },
+				"description": "Upload a new document for an existing company."
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Company Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation RemoveCompanyDocument($id: ID!) {\n  removeCompanyDocument(id: $id)\n}",
+						"variables": "{\n  \"id\": \"YOUR_DOCUMENT_ID_TO_DELETE\"\n}"
+					}
+				},
+				"url": { "raw": "http://localhost/api/graphql", "protocol": "http", "host": ["localhost"], "path": ["api", "graphql"] }
+			},
+			"response": []
+		},
+		{
+			"name": "Financial System",
+			"item": [
+				{
+					"name": "Create Sale Transaction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateSaleTransaction($input: CreateSaleTransactionInput!) {\n  createSaleTransaction(input: $input) {\n    id\n    buildingId\n    buyerId\n    sellerId\n    agentId\n    price\n    paymentMethod\n    status\n    commission\n    taxAmount\n    fees\n    totalAmount\n    notes\n    createdAt\n    updatedAt\n  }\n}",
+								"variables": "{\n  \"input\": {\n    \"buildingId\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"buyerId\": \"123e4567-e89b-12d3-a456-426614174001\",\n    \"sellerId\": \"123e4567-e89b-12d3-a456-426614174002\",\n    \"agentId\": \"123e4567-e89b-12d3-a456-426614174003\",\n    \"price\": 500000.00,\n    \"paymentMethod\": \"BANK_TRANSFER\",\n    \"commission\": 15000.00,\n    \"taxAmount\": 25000.00,\n    \"fees\": 5000.00,\n    \"notes\": \"Property sale transaction\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Sale Transaction Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateSaleTransactionStatus($id: ID!, $status: String!) {\n  updateSaleTransactionStatus(id: $id, status: $status) {\n    id\n    status\n    updatedAt\n    completedAt\n  }\n}",
+								"variables": "{\n  \"id\": \"PASTE_TRANSACTION_ID_HERE\",\n  \"status\": \"COMPLETED\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sale Transactions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetSaleTransactions(\n  $buildingId: ID\n  $buyerId: ID\n  $sellerId: ID\n  $agentId: ID\n  $status: String\n  $startDate: String\n  $endDate: String\n) {\n  getSaleTransactions(\n    buildingId: $buildingId\n    buyerId: $buyerId\n    sellerId: $sellerId\n    agentId: $agentId\n    status: $status\n    startDate: $startDate\n    endDate: $endDate\n  ) {\n    id\n    buildingId\n    buyerId\n    sellerId\n    agentId\n    price\n    paymentMethod\n    status\n    commission\n    taxAmount\n    fees\n    totalAmount\n    notes\n    createdAt\n    updatedAt\n    completedAt\n  }\n}",
+								"variables": "{\n  \"status\": \"COMPLETED\",\n  \"startDate\": \"2024-01-01T00:00:00Z\",\n  \"endDate\": \"2024-12-31T23:59:59Z\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lease Contract",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateLeaseContract($input: CreateLeaseContractInput!) {\n  createLeaseContract(input: $input) {\n    id\n    propertyId\n    tenantId\n    landlordId\n    agentId\n    durationMonths\n    startDate\n    endDate\n    monthlyRent\n    depositAmount\n    paymentFrequency\n    status\n    utilitiesIncluded\n    petAllowed\n    furnished\n    lateFeeAmount\n    gracePeriodDays\n    notes\n    createdAt\n    updatedAt\n  }\n}",
+								"variables": "{\n  \"input\": {\n    \"propertyId\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"tenantId\": \"123e4567-e89b-12d3-a456-426614174001\",\n    \"landlordId\": \"123e4567-e89b-12d3-a456-426614174002\",\n    \"agentId\": \"123e4567-e89b-12d3-a456-426614174003\",\n    \"durationMonths\": 12,\n    \"startDate\": \"2024-01-01T00:00:00Z\",\n    \"monthlyRent\": 2500.00,\n    \"depositAmount\": 5000.00,\n    \"paymentFrequency\": \"MONTHLY\",\n    \"utilitiesIncluded\": true,\n    \"petAllowed\": false,\n    \"furnished\": true,\n    \"lateFeeAmount\": 100.00,\n    \"gracePeriodDays\": 5,\n    \"notes\": \"Standard lease agreement\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Lease Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateLeaseStatus($id: ID!, $status: String!) {\n  updateLeaseStatus(id: $id, status: $status) {\n    id\n    status\n    updatedAt\n    signedAt\n    terminatedAt\n  }\n}",
+								"variables": "{\n  \"id\": \"PASTE_LEASE_ID_HERE\",\n  \"status\": \"ACTIVE\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lease Contracts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetLeaseContracts(\n  $propertyId: ID\n  $tenantId: ID\n  $landlordId: ID\n  $status: String\n  $activeOnly: Boolean\n) {\n  getLeaseContracts(\n    propertyId: $propertyId\n    tenantId: $tenantId\n    landlordId: $landlordId\n    status: $status\n    activeOnly: $activeOnly\n  ) {\n    id\n    propertyId\n    tenantId\n    landlordId\n    agentId\n    durationMonths\n    startDate\n    endDate\n    monthlyRent\n    depositAmount\n    paymentFrequency\n    status\n    utilitiesIncluded\n    petAllowed\n    furnished\n    lateFeeAmount\n    gracePeriodDays\n    notes\n    createdAt\n    updatedAt\n    signedAt\n    terminatedAt\n  }\n}",
+								"variables": "{\n  \"status\": \"ACTIVE\",\n  \"activeOnly\": true\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lease Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateLeasePayment($input: CreateLeasePaymentInput!) {\n  createLeasePayment(input: $input) {\n    id\n    leaseId\n    amount\n    paymentDate\n    dueDate\n    status\n    paymentMethod\n    lateFee\n    notes\n    createdAt\n    updatedAt\n  }\n}",
+								"variables": "{\n  \"input\": {\n    \"leaseId\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"amount\": 2500.00,\n    \"paymentDate\": \"2024-01-01T00:00:00Z\",\n    \"dueDate\": \"2024-01-01T00:00:00Z\",\n    \"paymentMethod\": \"BANK_TRANSFER\",\n    \"notes\": \"January rent payment\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Payment Status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdatePaymentStatus($id: ID!, $status: String!) {\n  updatePaymentStatus(id: $id, status: $status) {\n    id\n    status\n    updatedAt\n  }\n}",
+								"variables": "{\n  \"id\": \"PASTE_PAYMENT_ID_HERE\",\n  \"status\": \"COMPLETED\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Offer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateOffer($input: CreateOfferInput!) {\n  createOffer(input: $input) {\n    id\n    title\n    description\n    discountPercent\n    discountAmount\n    startDate\n    endDate\n    buildingId\n    companyId\n    imageUrl\n    termsConditions\n    isActive\n    maxUses\n    currentUses\n    minAmount\n    maxAmount\n    code\n    createdAt\n    updatedAt\n  }\n}",
+								"variables": "{\n  \"input\": {\n    \"title\": \"Summer Sale Discount\",\n    \"description\": \"Get 10% off on all properties this summer\",\n    \"discountPercent\": 10,\n    \"startDate\": \"2024-06-01T00:00:00Z\",\n    \"endDate\": \"2024-08-31T23:59:59Z\",\n    \"companyId\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"imageUrl\": \"https://example.com/summer-sale.jpg\",\n    \"termsConditions\": \"Valid for new contracts only\",\n    \"maxUses\": 100,\n    \"minAmount\": 1000.00,\n    \"maxAmount\": 100000.00\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Use Offer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UseOffer($code: String!, $userId: ID!, $amount: Float!) {\n  useOffer(code: $code, userId: $userId, amount: $amount) {\n    id\n    offerId\n    userId\n    amount\n    discount\n    usedAt\n  }\n}",
+								"variables": "{\n  \"code\": \"SUMMER2024\",\n  \"userId\": \"123e4567-e89b-12d3-a456-426614174001\",\n  \"amount\": 5000.00\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Offers",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetOffers(\n  $buildingId: ID\n  $companyId: ID\n  $activeOnly: Boolean\n) {\n  getOffers(\n    buildingId: $buildingId\n    companyId: $companyId\n    activeOnly: $activeOnly\n  ) {\n    id\n    title\n    description\n    discountPercent\n    discountAmount\n    startDate\n    endDate\n    buildingId\n    companyId\n    imageUrl\n    termsConditions\n    isActive\n    maxUses\n    currentUses\n    minAmount\n    maxAmount\n    code\n    createdAt\n    updatedAt\n  }\n}",
+								"variables": "{\n  \"activeOnly\": true\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Financial Report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation GenerateFinancialReport(\n  $reportType: String!\n  $periodStart: String!\n  $periodEnd: String!\n  $generatedBy: ID!\n) {\n  generateFinancialReport(\n    reportType: $reportType\n    periodStart: $periodStart\n    periodEnd: $periodEnd\n    generatedBy: $generatedBy\n  ) {\n    id\n    reportType\n    periodStart\n    periodEnd\n    totalSales\n    totalRentals\n    totalRevenue\n    totalCommissions\n    totalTaxes\n    totalFees\n    reportData\n    generatedAt\n    generatedBy\n  }\n}",
+								"variables": "{\n  \"reportType\": \"REVENUE\",\n  \"periodStart\": \"2024-01-01T00:00:00Z\",\n  \"periodEnd\": \"2024-12-31T23:59:59Z\",\n  \"generatedBy\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"protocolProfileBehavior": {},
+	"auth": {
+		"_postman_id": "a9e6b528-2a78-4a94-8a4a-0a758e5a7b69",
+		"name": "My Property Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	}
+} 
