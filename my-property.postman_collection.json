@@ -198,15 +198,15 @@
 					"response": []
 				},
 				{
-					"name": "Change Password (Authenticated)",
+					"name": "Create Wallet",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation ChangePassword($changePasswordInput: ChangePasswordInput!) {\n  changePassword(changePasswordInput: $changePasswordInput)\n}",
-								"variables": "{\n  \"changePasswordInput\": {\n    \"oldPassword\": \"password123\",\n    \"newPassword\": \"newSecurePassword1234\"\n  }\n}"
+								"query": "mutation CreateWallet($input: CreateWalletInput!) {\n  createWallet(input: $input) {\n    id\n    userId\n    balance\n    frozenBalance\n    isActive\n    createdAt\n  }\n}",
+								"variables": "{\n  \"input\": {\n    \"paymentMethod\": \"stripe\"\n  }\n}"
 							}
 						},
 						"url": {
@@ -225,14 +225,14 @@
 					"response": []
 				},
 				{
-					"name": "Get All Users (Admin Only)",
+					"name": "Get User Wallet",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query AllUsers {\n  allUsers {\n    id\n    email\n    roles\n  }\n}",
+								"query": "query GetUserWallet {\n  getUserWallet {\n    id\n    userId\n    balance\n    frozenBalance\n    isActive\n    createdAt\n    transactions {\n      id\n      amount\n      transactionType\n      status\n      createdAt\n    }\n  }\n}",
 								"variables": ""
 							}
 						},
@@ -252,29 +252,16 @@
 					"response": []
 				},
 				{
-					"name": "Upload Profile Picture",
+					"name": "Get Wallet Balance",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "operations",
-									"value": "{ \"query\": \"mutation ($file: Upload!) { uploadProfilePicture(file: $file) { id photoUrl } }\", \"variables\": { \"file\": null } }",
-									"type": "text"
-								},
-								{
-									"key": "map",
-									"value": "{ \"0\": [\"variables.file\"] }",
-									"type": "text"
-								},
-								{
-									"key": "0",
-									"type": "file",
-									"src": []
-								}
-							]
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetWalletBalance($walletId: String!) {\n  getWalletBalance(walletId: $walletId) {\n    balance\n    frozenBalance\n  }\n}",
+								"variables": "{\n  \"walletId\": \"WALLET_ID_HERE\"\n}"
+							}
 						},
 						"url": {
 							"raw": "http://localhost/api/users/graphql",
@@ -287,354 +274,266 @@
 								"users",
 								"graphql"
 							]
-						},
-						"description": "To use this in Postman:\n\n1. Keep the Body type as `form-data`.\n2. Do NOT change the `operations` or `map` fields.\n3. In the `0` field, click 'Select Files' and choose the image you want to upload.\n4. Make sure you are logged in first (run the Login mutation) so your session cookie is sent."
+						}
 					},
 					"response": []
 				},
 				{
-					"name": "Toggle Favorite Property",
+					"name": "Deposit Funds",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Deposit($walletId: String!, $input: DepositInput!) {\n  deposit(walletId: $walletId, input: $input) {\n    id\n    amount\n    status\n    stripePaymentIntentId\n    metadata\n    createdAt\n  }\n}",
+								"variables": "{\n  \"walletId\": \"WALLET_ID_HERE\",\n  \"input\": {\n    \"amount\": 100.00,\n    \"paymentMethod\": \"stripe\",\n    \"description\": \"Initial deposit\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Deposit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation ConfirmDeposit($transactionId: String!, $paymentIntentId: String!) {\n  confirmDeposit(transactionId: $transactionId, paymentIntentId: $paymentIntentId) {\n    id\n    amount\n    status\n    createdAt\n  }\n}",
+								"variables": "{\n  \"transactionId\": \"TRANSACTION_ID_HERE\",\n  \"paymentIntentId\": \"PAYMENT_INTENT_ID_HERE\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Withdraw Funds",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Withdraw($walletId: String!, $input: WithdrawInput!) {\n  withdraw(walletId: $walletId, input: $input) {\n    id\n    amount\n    status\n    stripeTransferId\n    createdAt\n  }\n}",
+								"variables": "{\n  \"walletId\": \"WALLET_ID_HERE\",\n  \"input\": {\n    \"amount\": 50.00,\n    \"paymentMethod\": \"stripe\",\n    \"description\": \"Withdrawal to bank account\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer Between Wallets",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Transfer($fromWalletId: String!, $input: TransferInput!) {\n  transfer(fromWalletId: $fromWalletId, input: $input) {\n    id\n    amount\n    status\n    metadata\n    createdAt\n  }\n}",
+								"variables": "{\n  \"fromWalletId\": \"SENDER_WALLET_ID_HERE\",\n  \"input\": {\n    \"amount\": 25.00,\n    \"receiverWalletId\": \"RECEIVER_WALLET_ID_HERE\",\n    \"description\": \"Transfer to friend\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction History",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetTransactionHistory($walletId: String!, $limit: Int, $offset: Int) {\n  getTransactionHistory(walletId: $walletId, limit: $limit, offset: $offset) {\n    id\n    amount\n    transactionType\n    status\n    description\n    createdAt\n  }\n}",
+								"variables": "{\n  \"walletId\": \"WALLET_ID_HERE\",\n  \"limit\": 20,\n  \"offset\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction Details",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetTransaction($transactionId: String!) {\n  getTransaction(transactionId: $transactionId) {\n    id\n    amount\n    transactionType\n    status\n    description\n    stripePaymentIntentId\n    stripeTransferId\n    metadata\n    createdAt\n  }\n}",
+								"variables": "{\n  \"transactionId\": \"TRANSACTION_ID_HERE\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Transaction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CancelTransaction($transactionId: String!) {\n  cancelTransaction(transactionId: $transactionId) {\n    id\n    status\n    createdAt\n  }\n}",
+								"variables": "{\n  \"transactionId\": \"TRANSACTION_ID_HERE\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Bank Details",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateBankDetails($walletId: String!, $encryptedBankDetails: String!) {\n  updateBankDetails(walletId: $walletId, encryptedBankDetails: $encryptedBankDetails) {\n    id\n    userId\n    isActive\n    updatedAt\n  }\n}",
+								"variables": "{\n  \"walletId\": \"WALLET_ID_HERE\",\n  \"encryptedBankDetails\": \"ENCRYPTED_BANK_DETAILS_HERE\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api/users/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"users",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wallet Webhooks",
+			"item": [
+				{
+					"name": "Stripe Webhook",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "graphql",
-							"graphql": {
-								"query": "mutation($propertyId: Int!) { toggleFavoriteProperty(propertyId: $propertyId) { id favoriteProperties { id } } }",
-								"variables": "{\n  \"propertyId\": 1\n}"
-							}
-						},
-						"url": {
-							"raw": "http://localhost/api/users/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"path": [
-								"api",
-								"users",
-								"graphql"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Comment",
-					"request": {
-						"method": "POST",
-						"header": [
+							},
 							{
-								"key": "Content-Type",
-								"value": "application/json"
+								"key": "Stripe-Signature",
+								"value": "whsec_your_webhook_secret_here"
 							}
 						],
 						"body": {
-							"mode": "graphql",
-							"graphql": {
-								"query": "mutation($propertyId: Int!, $content: String!) { createComment(propertyId: $propertyId, content: $content) { id content userId createdAt } }",
-								"variables": "{\n  \"propertyId\": 1,\n  \"content\": \"This is a great property!\"\n}"
-							}
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"evt_test_webhook\",\n  \"object\": \"event\",\n  \"api_version\": \"2022-11-15\",\n  \"created\": 1640995200,\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_test_payment_intent\",\n      \"object\": \"payment_intent\",\n      \"amount\": 10000,\n      \"currency\": \"usd\",\n      \"status\": \"succeeded\",\n      \"metadata\": {\n        \"userId\": \"user_id_here\",\n        \"walletId\": \"wallet_id_here\",\n        \"transactionType\": \"deposit\"\n      }\n    }\n  },\n  \"livemode\": false,\n  \"pending_webhooks\": 1,\n  \"request\": {\n    \"id\": \"req_test_request\",\n    \"idempotency_key\": null\n  },\n  \"type\": \"payment_intent.succeeded\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost/api/users/graphql",
+							"raw": "http://localhost:3000/wallet/webhook",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
+							"port": "3000",
 							"path": [
-								"api",
-								"users",
-								"graphql"
+								"wallet",
+								"webhook"
 							]
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Toggle Comment Like",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "graphql",
-							"graphql": {
-								"query": "mutation($commentId: Int!) { toggleCommentLike(commentId: $commentId) { id likedComments { id } } }",
-								"variables": "{\n  \"commentId\": 1\n}"
-							}
-						},
-						"url": {
-							"raw": "http://localhost/api/users/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"path": [
-								"api",
-								"users",
-								"graphql"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Reply to Comment",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "graphql",
-							"graphql": {
-								"query": "mutation($propertyId: Int!, $content: String!, $parentId: Int) { createComment(propertyId: $propertyId, content: $content, parentId: $parentId) { id content userId parentId createdAt } }",
-								"variables": "{\n  \"propertyId\": 1,\n  \"content\": \"This is a reply!\",\n  \"parentId\": 1\n}"
-							}
-						},
-						"url": {
-							"raw": "http://localhost/api/users/graphql",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"path": [
-								"api",
-								"users",
-								"graphql"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Interactions",
-					"item": [
-						{
-							"name": "Create Building",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation CreateBuilding($createBuildingInput: CreateBuildingInput!) {\n  createBuilding(createBuildingInput: $createBuildingInput) {\n    id\n    title\n    location\n    price\n    company_id\n    developer_id\n  }\n}",
-										"variables": "{\n  \"createBuildingInput\": {\n    \"title\": \"Luxury Apartment\",\n    \"location\": \"Downtown\",\n    \"price\": 500000,\n    \"company_id\": \"PASTE_COMPANY_ID\",\n    \"developer_id\": \"PASTE_DEVELOPER_ID\"\n  }\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Building",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query Building($id: ID!) {\n  building(id: $id) {\n    id\n    title\n    location\n    price\n    status\n    sold_at\n  }\n}",
-										"variables": "{\n  \"id\": \"PASTE_BUILDING_ID\"\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Building",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation UpdateBuilding($updateBuildingInput: UpdateBuildingInput!) {\n  updateBuilding(updateBuildingInput: $updateBuildingInput) {\n    id\n    title\n    status\n  }\n}",
-										"variables": "{\n  \"updateBuildingInput\": {\n    \"id\": \"PASTE_BUILDING_ID\",\n    \"title\": \"Renovated Luxury Apartment\",\n    \"status\": \"SOLD\"\n  }\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Remove Building",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation RemoveBuilding($id: ID!) {\n  removeBuilding(id: $id)\n}",
-										"variables": "{\n  \"id\": \"PASTE_BUILDING_ID\"\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Create Offer",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation CreateOffer($createOfferInput: CreateOfferInput!) {\n  createOffer(createOfferInput: $createOfferInput) {\n    id\n    offer_price\n    status\n  }\n}",
-										"variables": "{\n  \"createOfferInput\": {\n    \"company_id\": \"PASTE_COMPANY_ID\",\n    \"developer_id\": \"PASTE_DEVELOPER_ID\",\n    \"building_id\": \"PASTE_BUILDING_ID\",\n    \"offer_price\": 480000,\n    \"offer_date\": \"2024-01-15T10:00:00.000Z\"\n  }\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Offer",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query Offer($id: ID!) {\n  offer(id: $id) {\n    id\n    offer_price\n    offer_date\n    status\n    accepted_date\n  }\n}",
-										"variables": "{\n  \"id\": \"PASTE_OFFER_ID\"\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Offer",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation UpdateOffer($updateOfferInput: UpdateOfferInput!) {\n  updateOffer(updateOfferInput: $updateOfferInput) {\n    id\n    status\n    accepted_date\n  }\n}",
-										"variables": "{\n  \"updateOfferInput\": {\n    \"id\": \"PASTE_OFFER_ID\",\n    \"status\": \"ACCEPTED\",\n    \"accepted_date\": \"2024-01-20T14:30:00.000Z\"\n  }\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Remove Offer",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation RemoveOffer($id: ID!) {\n  removeOffer(id: $id)\n}",
-										"variables": "{\n  \"id\": \"PASTE_OFFER_ID\"\n}"
-									}
-								},
-								"url": {
-									"raw": "http://localhost/api/graphql",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"path": [
-										"api",
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						}
-					]
 				}
 			],
-			"description": "GraphQL API Endpoints"
+			"description": "Webhook endpoints for wallet payment processing"
 		},
 		{
 			"name": "Auth (REST)",
@@ -740,21 +639,21 @@
 							}
 						},
 						"url": {
-							"raw": "ws://localhost/api/properties/ws",
+							"raw": "ws://localhost:8080/graphql",
 							"protocol": "ws",
 							"host": [
 								"localhost"
 							],
+							"port": "8080",
 							"path": [
-								"api",
-								"properties",
-								"ws"
+								"graphql"
 							]
 						}
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Go service endpoints for property management"
 		},
 		{
 			"name": "Create Developer",

@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { IsEmail, IsEnum, IsOptional, IsUrl, Length } from 'class-validator';
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
 import { Property } from '../property/property.entity';
 import { Comment } from '../property/comment.entity';
+import { Wallet } from '../wallet/wallet.entity';
 
 export enum Role {
   USER = 'user',
@@ -91,4 +92,7 @@ export class User {
   @Field(() => Date)
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Wallet, wallet => wallet.user)
+  wallets: Wallet[];
 } 

@@ -25,6 +25,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=${NODE_ENV}
@@ -32,6 +34,9 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - SESSION_SECRET=${SESSION_SECRET}
       - ENCRYPTION_SECRET_KEY=${ENCRYPTION_SECRET_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - REDIS_URL=${REDIS_URL}
 
   # Go Service (Gin)
   go-service:
@@ -100,6 +105,19 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis for RedLock
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # pgAdmin for PostgreSQL management
   pgadmin:
     image: dpage/pgadmin4
@@ -135,4 +153,5 @@ services:
 
 volumes:
   postgres_data:
-  pgadmin_data: 
+  pgadmin_data:
+  redis_data: 

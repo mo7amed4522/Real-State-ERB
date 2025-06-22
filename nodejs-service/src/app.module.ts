@@ -10,6 +10,7 @@ import { PropertyModule } from './property/property.module';
 import { CompanyModule } from './company/company.module';
 import { FileModule } from './file/file.module';
 import { InteractionModule } from './interaction/interaction.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { InteractionModule } from './interaction/interaction.module';
     CompanyModule,
     FileModule,
     InteractionModule,
+    WalletModule,
   ],
   controllers: [],
   providers: [],
