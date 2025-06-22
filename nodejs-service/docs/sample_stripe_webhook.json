@@ -1,0 +1,68 @@
+{
+  "id": "evt_1P9XqQ2eZvKYlo2Cc0Q4g5f7",
+  "object": "event",
+  "api_version": "2022-11-15",
+  "created": 1678886400,
+  "data": {
+    "object": {
+      "id": "pi_3P9XqP2eZvKYlo2C0cQ5f4g6",
+      "object": "payment_intent",
+      "amount": 2000,
+      "amount_capturable": 0,
+      "amount_received": 2000,
+      "application": null,
+      "application_fee_amount": null,
+      "automatic_payment_methods": null,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic",
+      "client_secret": "pi_3P9XqP2eZvKYlo2C0cQ5f4g6_secret_aBcDeFgHiJkLmNoPqRsTuVwXyZ",
+      "confirmation_method": "automatic",
+      "created": 1678886399,
+      "currency": "usd",
+      "customer": "cus_PAbcdeFGH12345",
+      "description": "Wallet deposit",
+      "invoice": null,
+      "last_payment_error": null,
+      "livemode": false,
+      "metadata": {
+        "userId": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "walletId": "b7c0f2a0-8a1e-4f2a-b1d2-0c9f1a2b3c4d",
+        "transactionType": "deposit",
+        "description": "Wallet deposit for property viewing"
+      },
+      "next_action": null,
+      "on_behalf_of": null,
+      "payment_method": "pm_1P9XqO2eZvKYlo2C5f6g7h8i",
+      "payment_method_options": {
+        "card": {
+          "installments": null,
+          "mandate_options": null,
+          "network": null,
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card"
+      ],
+      "processing": null,
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "succeeded",
+      "transfer_data": null,
+      "transfer_group": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_aBcDeFgH",
+    "idempotency_key": "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+  },
+  "type": "payment_intent.succeeded"
+} 

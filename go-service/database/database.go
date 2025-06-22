@@ -4,9 +4,10 @@ import (
 	"log"
 	"os"
 
+	"my-property/go-service/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"my-property/go-service/models"
 )
 
 var DB *gorm.DB
@@ -25,11 +26,10 @@ func InitDB() {
 	Connect()
 	// Auto-migrate the schema
 	DB.AutoMigrate(
-		&models.Property{}, 
-		&models.PropertyImage{}, 
+		&models.Property{},
+		&models.PropertyImage{},
 		&models.Comment{},
 		&models.Building{},
-		&models.Like{},
 		// Chat models
 		&models.ChatRoom{},
 		&models.ChatParticipant{},
@@ -57,4 +57,4 @@ func MigratePropertyTranslations(db *gorm.DB) error {
 	return db.Exec(`ALTER TABLE properties 
 	ALTER COLUMN title TYPE JSONB USING title::jsonb,
 	ALTER COLUMN description TYPE JSONB USING description::jsonb;`).Error
-} 
+}

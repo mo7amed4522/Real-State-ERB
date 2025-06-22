@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"my-property/go-service/database"
 	"my-property/go-service/models"
 	"my-property/go-service/utils"
 	"time"
@@ -12,17 +11,17 @@ import (
 )
 
 type FinancialService struct {
-	db               *gorm.DB
+	db                *gorm.DB
 	encryptionService *utils.EncryptionService
-	uploadDir        string
+	uploadDir         string
 }
 
 func NewFinancialService(db *gorm.DB, encryptionService *utils.EncryptionService) *FinancialService {
 	uploadDir := "./uploads/financial"
 	return &FinancialService{
-		db:               db,
+		db:                db,
 		encryptionService: encryptionService,
-		uploadDir:        uploadDir,
+		uploadDir:         uploadDir,
 	}
 }
 
@@ -112,25 +111,25 @@ func (s *FinancialService) CreateLeaseContract(input CreateLeaseContractInput) (
 	endDate := input.StartDate.AddDate(0, input.DurationMonths, 0)
 
 	lease := &models.LeaseContract{
-		PropertyID:       input.PropertyID,
-		TenantID:         input.TenantID,
-		LandlordID:       input.LandlordID,
-		AgentID:          input.AgentID,
-		DurationMonths:   input.DurationMonths,
-		StartDate:        input.StartDate,
-		EndDate:          endDate,
-		MonthlyRent:      input.MonthlyRent,
-		DepositAmount:    input.DepositAmount,
-		PaymentFrequency: input.PaymentFrequency,
-		Status:           models.LeaseStatusPending,
+		PropertyID:        input.PropertyID,
+		TenantID:          input.TenantID,
+		LandlordID:        input.LandlordID,
+		AgentID:           input.AgentID,
+		DurationMonths:    input.DurationMonths,
+		StartDate:         input.StartDate,
+		EndDate:           endDate,
+		MonthlyRent:       input.MonthlyRent,
+		DepositAmount:     input.DepositAmount,
+		PaymentFrequency:  input.PaymentFrequency,
+		Status:            models.LeaseStatusPending,
 		UtilitiesIncluded: input.UtilitiesIncluded,
-		PetAllowed:       input.PetAllowed,
-		Furnished:        input.Furnished,
-		LateFeeAmount:    input.LateFeeAmount,
-		GracePeriodDays:  input.GracePeriodDays,
-		Notes:            input.Notes,
-		CreatedAt:        time.Now(),
-		UpdatedAt:        time.Now(),
+		PetAllowed:        input.PetAllowed,
+		Furnished:         input.Furnished,
+		LateFeeAmount:     input.LateFeeAmount,
+		GracePeriodDays:   input.GracePeriodDays,
+		Notes:             input.Notes,
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
 	}
 
 	if err := s.db.Create(lease).Error; err != nil {
@@ -357,7 +356,7 @@ func (s *FinancialService) GenerateFinancialReport(reportType string, periodStar
 	// Calculate sales revenue
 	var salesTransactions []models.SaleTransaction
 	s.db.Where("status = ? AND created_at BETWEEN ? AND ?", models.TransactionStatusCompleted, periodStart, periodEnd).Find(&salesTransactions)
-	
+
 	for _, transaction := range salesTransactions {
 		totalSales += transaction.Price
 		totalCommissions += transaction.Commission
@@ -368,7 +367,7 @@ func (s *FinancialService) GenerateFinancialReport(reportType string, periodStar
 	// Calculate rental revenue
 	var leasePayments []models.LeasePayment
 	s.db.Where("status = ? AND payment_date BETWEEN ? AND ?", models.TransactionStatusCompleted, periodStart, periodEnd).Find(&leasePayments)
-	
+
 	for _, payment := range leasePayments {
 		totalRentals += payment.Amount
 	}
@@ -377,10 +376,10 @@ func (s *FinancialService) GenerateFinancialReport(reportType string, periodStar
 
 	// Create detailed report data
 	reportData := map[string]interface{}{
-		"sales_count":      len(salesTransactions),
-		"payments_count":   len(leasePayments),
-		"avg_sale_price":   totalSales / float64(len(salesTransactions)),
-		"avg_rental":       totalRentals / float64(len(leasePayments)),
+		"sales_count":    len(salesTransactions),
+		"payments_count": len(leasePayments),
+		"avg_sale_price": totalSales / float64(len(salesTransactions)),
+		"avg_rental":     totalRentals / float64(len(leasePayments)),
 	}
 
 	report := &models.FinancialReport{
@@ -418,43 +417,43 @@ func (s *FinancialService) generatePromoCode() string {
 
 // Input types
 type CreateSaleTransactionInput struct {
-	BuildingID    uuid.UUID                    `json:"building_id"`
-	BuyerID       uuid.UUID                    `json:"buyer_id"`
-	SellerID      uuid.UUID                    `json:"seller_id"`
-	AgentID       *uuid.UUID                   `json:"agent_id"`
-	Price         float64                      `json:"price"`
-	PaymentMethod models.PaymentMethod         `json:"payment_method"`
-	Commission    float64                      `json:"commission"`
-	TaxAmount     float64                      `json:"tax_amount"`
-	Fees          float64                      `json:"fees"`
-	Notes         string                       `json:"notes"`
+	BuildingID    uuid.UUID            `json:"building_id"`
+	BuyerID       uuid.UUID            `json:"buyer_id"`
+	SellerID      uuid.UUID            `json:"seller_id"`
+	AgentID       *uuid.UUID           `json:"agent_id"`
+	Price         float64              `json:"price"`
+	PaymentMethod models.PaymentMethod `json:"payment_method"`
+	Commission    float64              `json:"commission"`
+	TaxAmount     float64              `json:"tax_amount"`
+	Fees          float64              `json:"fees"`
+	Notes         string               `json:"notes"`
 }
 
 type CreateLeaseContractInput struct {
-	PropertyID       uuid.UUID                    `json:"property_id"`
-	TenantID         uuid.UUID                    `json:"tenant_id"`
-	LandlordID       uuid.UUID                    `json:"landlord_id"`
-	AgentID          *uuid.UUID                   `json:"agent_id"`
-	DurationMonths   int                          `json:"duration_months"`
-	StartDate        time.Time                    `json:"start_date"`
-	MonthlyRent      float64                      `json:"monthly_rent"`
-	DepositAmount    float64                      `json:"deposit_amount"`
-	PaymentFrequency models.PaymentFrequency     `json:"payment_frequency"`
-	UtilitiesIncluded bool                        `json:"utilities_included"`
-	PetAllowed       bool                         `json:"pet_allowed"`
-	Furnished        bool                         `json:"furnished"`
-	LateFeeAmount    float64                      `json:"late_fee_amount"`
-	GracePeriodDays  int                          `json:"grace_period_days"`
-	Notes            string                       `json:"notes"`
+	PropertyID        uuid.UUID               `json:"property_id"`
+	TenantID          uuid.UUID               `json:"tenant_id"`
+	LandlordID        uuid.UUID               `json:"landlord_id"`
+	AgentID           *uuid.UUID              `json:"agent_id"`
+	DurationMonths    int                     `json:"duration_months"`
+	StartDate         time.Time               `json:"start_date"`
+	MonthlyRent       float64                 `json:"monthly_rent"`
+	DepositAmount     float64                 `json:"deposit_amount"`
+	PaymentFrequency  models.PaymentFrequency `json:"payment_frequency"`
+	UtilitiesIncluded bool                    `json:"utilities_included"`
+	PetAllowed        bool                    `json:"pet_allowed"`
+	Furnished         bool                    `json:"furnished"`
+	LateFeeAmount     float64                 `json:"late_fee_amount"`
+	GracePeriodDays   int                     `json:"grace_period_days"`
+	Notes             string                  `json:"notes"`
 }
 
 type CreateLeasePaymentInput struct {
-	LeaseID       uuid.UUID                    `json:"lease_id"`
-	Amount        float64                      `json:"amount"`
-	PaymentDate   time.Time                    `json:"payment_date"`
-	DueDate       time.Time                    `json:"due_date"`
-	PaymentMethod models.PaymentMethod         `json:"payment_method"`
-	Notes         string                       `json:"notes"`
+	LeaseID       uuid.UUID            `json:"lease_id"`
+	Amount        float64              `json:"amount"`
+	PaymentDate   time.Time            `json:"payment_date"`
+	DueDate       time.Time            `json:"due_date"`
+	PaymentMethod models.PaymentMethod `json:"payment_method"`
+	Notes         string               `json:"notes"`
 }
 
 type CreateOfferInput struct {
@@ -475,25 +474,25 @@ type CreateOfferInput struct {
 }
 
 type SaleTransactionFilters struct {
-	BuildingID *uuid.UUID                    `json:"building_id"`
-	BuyerID    *uuid.UUID                    `json:"buyer_id"`
-	SellerID   *uuid.UUID                    `json:"seller_id"`
-	AgentID    *uuid.UUID                    `json:"agent_id"`
-	Status     models.TransactionStatus      `json:"status"`
-	StartDate  *time.Time                    `json:"start_date"`
-	EndDate    *time.Time                    `json:"end_date"`
+	BuildingID *uuid.UUID               `json:"building_id"`
+	BuyerID    *uuid.UUID               `json:"buyer_id"`
+	SellerID   *uuid.UUID               `json:"seller_id"`
+	AgentID    *uuid.UUID               `json:"agent_id"`
+	Status     models.TransactionStatus `json:"status"`
+	StartDate  *time.Time               `json:"start_date"`
+	EndDate    *time.Time               `json:"end_date"`
 }
 
 type LeaseContractFilters struct {
-	PropertyID *uuid.UUID           `json:"property_id"`
-	TenantID   *uuid.UUID           `json:"tenant_id"`
-	LandlordID *uuid.UUID           `json:"landlord_id"`
-	Status     models.LeaseStatus   `json:"status"`
-	ActiveOnly bool                 `json:"active_only"`
+	PropertyID *uuid.UUID         `json:"property_id"`
+	TenantID   *uuid.UUID         `json:"tenant_id"`
+	LandlordID *uuid.UUID         `json:"landlord_id"`
+	Status     models.LeaseStatus `json:"status"`
+	ActiveOnly bool               `json:"active_only"`
 }
 
 type OfferFilters struct {
 	BuildingID *uuid.UUID `json:"building_id"`
 	CompanyID  *uuid.UUID `json:"company_id"`
 	ActiveOnly bool       `json:"active_only"`
-} 
+}

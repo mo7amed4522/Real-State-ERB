@@ -1,6 +1,8 @@
 package graphql
 
 import (
+	"context"
+	"fmt"
 	"my-property/go-service/models"
 	"my-property/go-service/services"
 	"time"
@@ -21,49 +23,52 @@ func NewFinancialResolvers(financialService *services.FinancialService) *Financi
 }
 
 // Sale Transaction Resolvers
-func (r *FinancialResolvers) CreateSaleTransaction(ctx graphql.ResolveContext) (interface{}, error) {
-	var input services.CreateSaleTransactionInput
-	if err := graphql.GetFieldContext(ctx).Args["input"].(map[string]interface{}); err != nil {
-		return nil, err
+func (r *FinancialResolvers) CreateSaleTransaction(ctx context.Context) (interface{}, error) {
+	args := graphql.GetFieldContext(ctx).Args
+	inputMap, ok := args["input"].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid 'input' argument")
 	}
 
-	// Parse input
-	if buildingID, ok := input["buildingId"].(string); ok {
+	var input services.CreateSaleTransactionInput
+
+	// Parse input from map
+	if buildingID, ok := inputMap["buildingId"].(string); ok {
 		if id, err := uuid.Parse(buildingID); err == nil {
 			input.BuildingID = id
 		}
 	}
-	if buyerID, ok := input["buyerId"].(string); ok {
+	if buyerID, ok := inputMap["buyerId"].(string); ok {
 		if id, err := uuid.Parse(buyerID); err == nil {
 			input.BuyerID = id
 		}
 	}
-	if sellerID, ok := input["sellerId"].(string); ok {
+	if sellerID, ok := inputMap["sellerId"].(string); ok {
 		if id, err := uuid.Parse(sellerID); err == nil {
 			input.SellerID = id
 		}
 	}
-	if agentID, ok := input["agentId"].(string); ok && agentID != "" {
+	if agentID, ok := inputMap["agentId"].(string); ok && agentID != "" {
 		if id, err := uuid.Parse(agentID); err == nil {
 			input.AgentID = &id
 		}
 	}
-	if price, ok := input["price"].(float64); ok {
+	if price, ok := inputMap["price"].(float64); ok {
 		input.Price = price
 	}
-	if paymentMethod, ok := input["paymentMethod"].(string); ok {
+	if paymentMethod, ok := inputMap["paymentMethod"].(string); ok {
 		input.PaymentMethod = models.PaymentMethod(paymentMethod)
 	}
-	if commission, ok := input["commission"].(float64); ok {
+	if commission, ok := inputMap["commission"].(float64); ok {
 		input.Commission = commission
 	}
-	if taxAmount, ok := input["taxAmount"].(float64); ok {
+	if taxAmount, ok := inputMap["taxAmount"].(float64); ok {
 		input.TaxAmount = taxAmount
 	}
-	if fees, ok := input["fees"].(float64); ok {
+	if fees, ok := inputMap["fees"].(float64); ok {
 		input.Fees = fees
 	}
-	if notes, ok := input["notes"].(string); ok {
+	if notes, ok := inputMap["notes"].(string); ok {
 		input.Notes = notes
 	}
 
@@ -75,15 +80,23 @@ func (r *FinancialResolvers) CreateSaleTransaction(ctx graphql.ResolveContext) (
 	return transaction, nil
 }
 
-func (r *FinancialResolvers) UpdateSaleTransactionStatus(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) UpdateSaleTransactionStatus(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
-	transactionID, err := uuid.Parse(args["id"].(string))
+
+	transactionIDStr, ok := args["id"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'id' argument")
+	}
+	transactionID, err := uuid.Parse(transactionIDStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid 'id' argument: %w", err)
 	}
 
-	status := models.TransactionStatus(args["status"].(string))
+	statusStr, ok := args["status"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'status' argument")
+	}
+	status := models.TransactionStatus(statusStr)
 
 	transaction, err := r.financialService.UpdateSaleTransactionStatus(transactionID, status)
 	if err != nil {
@@ -93,9 +106,9 @@ func (r *FinancialResolvers) UpdateSaleTransactionStatus(ctx graphql.ResolveCont
 	return transaction, nil
 }
 
-func (r *FinancialResolvers) GetSaleTransactions(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) GetSaleTransactions(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
+
 	var filters services.SaleTransactionFilters
 
 	if buildingID, ok := args["buildingId"].(string); ok && buildingID != "" {
@@ -141,66 +154,68 @@ func (r *FinancialResolvers) GetSaleTransactions(ctx graphql.ResolveContext) (in
 }
 
 // Lease Contract Resolvers
-func (r *FinancialResolvers) CreateLeaseContract(ctx graphql.ResolveContext) (interface{}, error) {
-	var input services.CreateLeaseContractInput
-	if err := graphql.GetFieldContext(ctx).Args["input"].(map[string]interface{}); err != nil {
-		return nil, err
+func (r *FinancialResolvers) CreateLeaseContract(ctx context.Context) (interface{}, error) {
+	args := graphql.GetFieldContext(ctx).Args
+	inputMap, ok := args["input"].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid 'input' argument")
 	}
 
-	// Parse input
-	if propertyID, ok := input["propertyId"].(string); ok {
+	var input services.CreateLeaseContractInput
+
+	if propertyID, ok := inputMap["propertyId"].(string); ok {
 		if id, err := uuid.Parse(propertyID); err == nil {
 			input.PropertyID = id
 		}
 	}
-	if tenantID, ok := input["tenantId"].(string); ok {
+	if tenantID, ok := inputMap["tenantId"].(string); ok {
 		if id, err := uuid.Parse(tenantID); err == nil {
 			input.TenantID = id
 		}
 	}
-	if landlordID, ok := input["landlordId"].(string); ok {
+	if landlordID, ok := inputMap["landlordId"].(string); ok {
 		if id, err := uuid.Parse(landlordID); err == nil {
 			input.LandlordID = id
 		}
 	}
-	if agentID, ok := input["agentId"].(string); ok && agentID != "" {
+	if agentID, ok := inputMap["agentId"].(string); ok && agentID != "" {
 		if id, err := uuid.Parse(agentID); err == nil {
 			input.AgentID = &id
 		}
 	}
-	if durationMonths, ok := input["durationMonths"].(int); ok {
-		input.DurationMonths = durationMonths
+	if durationMonths, ok := inputMap["durationMonths"].(float64); ok { // JSON numbers are float64
+		input.DurationMonths = int(durationMonths)
 	}
-	if startDate, ok := input["startDate"].(string); ok {
+	if startDate, ok := inputMap["startDate"].(string); ok {
 		if date, err := time.Parse(time.RFC3339, startDate); err == nil {
 			input.StartDate = date
 		}
 	}
-	if monthlyRent, ok := input["monthlyRent"].(float64); ok {
+	if monthlyRent, ok := inputMap["monthlyRent"].(float64); ok {
 		input.MonthlyRent = monthlyRent
 	}
-	if depositAmount, ok := input["depositAmount"].(float64); ok {
+	if depositAmount, ok := inputMap["depositAmount"].(float64); ok {
 		input.DepositAmount = depositAmount
 	}
-	if paymentFrequency, ok := input["paymentFrequency"].(string); ok {
+	if paymentFrequency, ok := inputMap["paymentFrequency"].(string); ok {
 		input.PaymentFrequency = models.PaymentFrequency(paymentFrequency)
 	}
-	if utilitiesIncluded, ok := input["utilitiesIncluded"].(bool); ok {
+	if utilitiesIncluded, ok := inputMap["utilitiesIncluded"].(bool); ok {
 		input.UtilitiesIncluded = utilitiesIncluded
 	}
-	if petAllowed, ok := input["petAllowed"].(bool); ok {
+	if petAllowed, ok := inputMap["petAllowed"].(bool); ok {
 		input.PetAllowed = petAllowed
 	}
-	if furnished, ok := input["furnished"].(bool); ok {
+	if furnished, ok := inputMap["furnished"].(bool); ok {
 		input.Furnished = furnished
 	}
-	if lateFeeAmount, ok := input["lateFeeAmount"].(float64); ok {
+	if lateFeeAmount, ok := inputMap["lateFeeAmount"].(float64); ok {
 		input.LateFeeAmount = lateFeeAmount
 	}
-	if gracePeriodDays, ok := input["gracePeriodDays"].(int); ok {
-		input.GracePeriodDays = gracePeriodDays
+	if gracePeriodDays, ok := inputMap["gracePeriodDays"].(float64); ok { // JSON numbers are float64
+		input.GracePeriodDays = int(gracePeriodDays)
 	}
-	if notes, ok := input["notes"].(string); ok {
+	if notes, ok := inputMap["notes"].(string); ok {
 		input.Notes = notes
 	}
 
@@ -212,15 +227,23 @@ func (r *FinancialResolvers) CreateLeaseContract(ctx graphql.ResolveContext) (in
 	return lease, nil
 }
 
-func (r *FinancialResolvers) UpdateLeaseStatus(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) UpdateLeaseStatus(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
-	leaseID, err := uuid.Parse(args["id"].(string))
+
+	leaseIDStr, ok := args["id"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'id' argument")
+	}
+	leaseID, err := uuid.Parse(leaseIDStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid 'id' argument: %w", err)
 	}
 
-	status := models.LeaseStatus(args["status"].(string))
+	statusStr, ok := args["status"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'status' argument")
+	}
+	status := models.LeaseStatus(statusStr)
 
 	lease, err := r.financialService.UpdateLeaseStatus(leaseID, status)
 	if err != nil {
@@ -230,9 +253,9 @@ func (r *FinancialResolvers) UpdateLeaseStatus(ctx graphql.ResolveContext) (inte
 	return lease, nil
 }
 
-func (r *FinancialResolvers) GetLeaseContracts(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) GetLeaseContracts(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
+
 	var filters services.LeaseContractFilters
 
 	if propertyID, ok := args["propertyId"].(string); ok && propertyID != "" {
@@ -266,35 +289,37 @@ func (r *FinancialResolvers) GetLeaseContracts(ctx graphql.ResolveContext) (inte
 }
 
 // Lease Payment Resolvers
-func (r *FinancialResolvers) CreateLeasePayment(ctx graphql.ResolveContext) (interface{}, error) {
-	var input services.CreateLeasePaymentInput
-	if err := graphql.GetFieldContext(ctx).Args["input"].(map[string]interface{}); err != nil {
-		return nil, err
+func (r *FinancialResolvers) CreateLeasePayment(ctx context.Context) (interface{}, error) {
+	args := graphql.GetFieldContext(ctx).Args
+	inputMap, ok := args["input"].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid 'input' argument")
 	}
 
-	// Parse input
-	if leaseID, ok := input["leaseId"].(string); ok {
+	var input services.CreateLeasePaymentInput
+
+	if leaseID, ok := inputMap["leaseId"].(string); ok {
 		if id, err := uuid.Parse(leaseID); err == nil {
 			input.LeaseID = id
 		}
 	}
-	if amount, ok := input["amount"].(float64); ok {
+	if amount, ok := inputMap["amount"].(float64); ok {
 		input.Amount = amount
 	}
-	if paymentDate, ok := input["paymentDate"].(string); ok {
+	if paymentDate, ok := inputMap["paymentDate"].(string); ok {
 		if date, err := time.Parse(time.RFC3339, paymentDate); err == nil {
 			input.PaymentDate = date
 		}
 	}
-	if dueDate, ok := input["dueDate"].(string); ok {
+	if dueDate, ok := inputMap["dueDate"].(string); ok {
 		if date, err := time.Parse(time.RFC3339, dueDate); err == nil {
 			input.DueDate = date
 		}
 	}
-	if paymentMethod, ok := input["paymentMethod"].(string); ok {
+	if paymentMethod, ok := inputMap["paymentMethod"].(string); ok {
 		input.PaymentMethod = models.PaymentMethod(paymentMethod)
 	}
-	if notes, ok := input["notes"].(string); ok {
+	if notes, ok := inputMap["notes"].(string); ok {
 		input.Notes = notes
 	}
 
@@ -306,15 +331,23 @@ func (r *FinancialResolvers) CreateLeasePayment(ctx graphql.ResolveContext) (int
 	return payment, nil
 }
 
-func (r *FinancialResolvers) UpdatePaymentStatus(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) UpdatePaymentStatus(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
-	paymentID, err := uuid.Parse(args["id"].(string))
+
+	paymentIDStr, ok := args["id"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'id' argument")
+	}
+	paymentID, err := uuid.Parse(paymentIDStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid 'id' argument: %w", err)
 	}
 
-	status := models.TransactionStatus(args["status"].(string))
+	statusStr, ok := args["status"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'status' argument")
+	}
+	status := models.TransactionStatus(statusStr)
 
 	payment, err := r.financialService.UpdatePaymentStatus(paymentID, status)
 	if err != nil {
@@ -325,61 +358,63 @@ func (r *FinancialResolvers) UpdatePaymentStatus(ctx graphql.ResolveContext) (in
 }
 
 // Offer Resolvers
-func (r *FinancialResolvers) CreateOffer(ctx graphql.ResolveContext) (interface{}, error) {
-	var input services.CreateOfferInput
-	if err := graphql.GetFieldContext(ctx).Args["input"].(map[string]interface{}); err != nil {
-		return nil, err
+func (r *FinancialResolvers) CreateOffer(ctx context.Context) (interface{}, error) {
+	args := graphql.GetFieldContext(ctx).Args
+	inputMap, ok := args["input"].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid 'input' argument")
 	}
 
-	// Parse input
-	if title, ok := input["title"].(string); ok {
+	var input services.CreateOfferInput
+
+	if title, ok := inputMap["title"].(string); ok {
 		input.Title = title
 	}
-	if description, ok := input["description"].(string); ok {
+	if description, ok := inputMap["description"].(string); ok {
 		input.Description = description
 	}
-	if discountPercent, ok := input["discountPercent"].(int); ok {
-		input.DiscountPercent = discountPercent
+	if discountPercent, ok := inputMap["discountPercent"].(float64); ok { // JSON numbers are float64
+		input.DiscountPercent = int(discountPercent)
 	}
-	if discountAmount, ok := input["discountAmount"].(float64); ok {
+	if discountAmount, ok := inputMap["discountAmount"].(float64); ok {
 		input.DiscountAmount = discountAmount
 	}
-	if startDate, ok := input["startDate"].(string); ok {
+	if startDate, ok := inputMap["startDate"].(string); ok {
 		if date, err := time.Parse(time.RFC3339, startDate); err == nil {
 			input.StartDate = date
 		}
 	}
-	if endDate, ok := input["endDate"].(string); ok {
+	if endDate, ok := inputMap["endDate"].(string); ok {
 		if date, err := time.Parse(time.RFC3339, endDate); err == nil {
 			input.EndDate = date
 		}
 	}
-	if buildingID, ok := input["buildingId"].(string); ok && buildingID != "" {
+	if buildingID, ok := inputMap["buildingId"].(string); ok && buildingID != "" {
 		if id, err := uuid.Parse(buildingID); err == nil {
 			input.BuildingID = &id
 		}
 	}
-	if companyID, ok := input["companyId"].(string); ok && companyID != "" {
+	if companyID, ok := inputMap["companyId"].(string); ok && companyID != "" {
 		if id, err := uuid.Parse(companyID); err == nil {
 			input.CompanyID = &id
 		}
 	}
-	if imageURL, ok := input["imageUrl"].(string); ok {
+	if imageURL, ok := inputMap["imageUrl"].(string); ok {
 		input.ImageURL = imageURL
 	}
-	if termsConditions, ok := input["termsConditions"].(string); ok {
+	if termsConditions, ok := inputMap["termsConditions"].(string); ok {
 		input.TermsConditions = termsConditions
 	}
-	if maxUses, ok := input["maxUses"].(int); ok {
-		input.MaxUses = maxUses
+	if maxUses, ok := inputMap["maxUses"].(float64); ok { // JSON numbers are float64
+		input.MaxUses = int(maxUses)
 	}
-	if minAmount, ok := input["minAmount"].(float64); ok {
+	if minAmount, ok := inputMap["minAmount"].(float64); ok {
 		input.MinAmount = minAmount
 	}
-	if maxAmount, ok := input["maxAmount"].(float64); ok {
+	if maxAmount, ok := inputMap["maxAmount"].(float64); ok {
 		input.MaxAmount = maxAmount
 	}
-	if code, ok := input["code"].(string); ok {
+	if code, ok := inputMap["code"].(string); ok {
 		input.Code = code
 	}
 
@@ -391,15 +426,25 @@ func (r *FinancialResolvers) CreateOffer(ctx graphql.ResolveContext) (interface{
 	return offer, nil
 }
 
-func (r *FinancialResolvers) UseOffer(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) UseOffer(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
-	offerCode := args["code"].(string)
-	userID, err := uuid.Parse(args["userId"].(string))
-	if err != nil {
-		return nil, err
+
+	offerCode, ok := args["code"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'code' argument")
 	}
-	amount := args["amount"].(float64)
+	userIDStr, ok := args["userId"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'userId' argument")
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid 'userId' argument: %w", err)
+	}
+	amount, ok := args["amount"].(float64)
+	if !ok {
+		return nil, fmt.Errorf("missing 'amount' argument")
+	}
 
 	offerUse, err := r.financialService.UseOffer(offerCode, userID, amount)
 	if err != nil {
@@ -409,9 +454,9 @@ func (r *FinancialResolvers) UseOffer(ctx graphql.ResolveContext) (interface{}, 
 	return offerUse, nil
 }
 
-func (r *FinancialResolvers) GetOffers(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) GetOffers(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
+
 	var filters services.OfferFilters
 
 	if buildingID, ok := args["buildingId"].(string); ok && buildingID != "" {
@@ -437,21 +482,36 @@ func (r *FinancialResolvers) GetOffers(ctx graphql.ResolveContext) (interface{},
 }
 
 // Financial Report Resolvers
-func (r *FinancialResolvers) GenerateFinancialReport(ctx graphql.ResolveContext) (interface{}, error) {
+func (r *FinancialResolvers) GenerateFinancialReport(ctx context.Context) (interface{}, error) {
 	args := graphql.GetFieldContext(ctx).Args
-	
-	reportType := args["reportType"].(string)
-	periodStart, err := time.Parse(time.RFC3339, args["periodStart"].(string))
-	if err != nil {
-		return nil, err
+
+	reportType, ok := args["reportType"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'reportType' argument")
 	}
-	periodEnd, err := time.Parse(time.RFC3339, args["periodEnd"].(string))
-	if err != nil {
-		return nil, err
+	periodStartStr, ok := args["periodStart"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'periodStart' argument")
 	}
-	generatedBy, err := uuid.Parse(args["generatedBy"].(string))
+	periodStart, err := time.Parse(time.RFC3339, periodStartStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid 'periodStart' argument: %w", err)
+	}
+	periodEndStr, ok := args["periodEnd"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'periodEnd' argument")
+	}
+	periodEnd, err := time.Parse(time.RFC3339, periodEndStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid 'periodEnd' argument: %w", err)
+	}
+	generatedByStr, ok := args["generatedBy"].(string)
+	if !ok {
+		return nil, fmt.Errorf("missing 'generatedBy' argument")
+	}
+	generatedBy, err := uuid.Parse(generatedByStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid 'generatedBy' argument: %w", err)
 	}
 
 	report, err := r.financialService.GenerateFinancialReport(reportType, periodStart, periodEnd, generatedBy)
@@ -460,4 +520,4 @@ func (r *FinancialResolvers) GenerateFinancialReport(ctx graphql.ResolveContext)
 	}
 
 	return report, nil
-} 
+}

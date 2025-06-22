@@ -1,14 +1,13 @@
 package utils
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"sync"
 	"time"
 
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 )
 
 type KafkaService struct {
@@ -179,11 +178,11 @@ func (k *KafkaService) PublishRoomMessage(roomID uint, message *ChatMessage) err
 // SubscribeToRoom subscribes to messages from a specific room
 func (k *KafkaService) SubscribeToRoom(roomID uint, handler MessageHandler) error {
 	topic := fmt.Sprintf("chat_room_%d", roomID)
-	
+
 	// Create topic if it doesn't exist
 	if err := k.CreateTopic(topic); err != nil {
 		log.Printf("Topic creation failed (might already exist): %v", err)
 	}
-	
+
 	return k.SubscribeToTopic(topic, handler)
-} 
+}

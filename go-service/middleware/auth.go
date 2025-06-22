@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"context"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,11 +30,10 @@ func AuthMiddleware() gin.HandlerFunc {
 }
 
 // Helper to inject user info into context
-import "context"
 type contextKey string
 
 func contextWithUser(ctx context.Context, userID uint, userType string) context.Context {
 	ctx = context.WithValue(ctx, contextKey("user_id"), userID)
 	ctx = context.WithValue(ctx, contextKey("user_type"), userType)
 	return ctx
-} 
+}

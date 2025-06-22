@@ -24,4 +24,4 @@ func ToJSON(data interface{}) string {
 // FromJSON converts JSON string to interface
 func FromJSON(jsonStr string, target interface{}) error {
 	return json.Unmarshal([]byte(jsonStr), target)
-} 
+}

@@ -1,0 +1,12 @@
+{
+  "request_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "data": {
+    "content": "This is a test message to be moderated.",
+    "image_url": "https://example.com/image.jpg",
+    "user_id": "user-123",
+    "user_type": "regular",
+    "room_id": "room-456"
+  },
+  "service_type": "moderation",
+  "timestamp": "2024-05-21T10:05:00Z"
+} 

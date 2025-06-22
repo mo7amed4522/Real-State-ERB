@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +14,7 @@ import (
 func UploadPropertyImages(c *gin.Context) {
 	propertyID := c.Param("id")
 
-	var property models.Property
+	var property models.Building
 	if err := database.DB.First(&property, "id = ?", propertyID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Property not found"})
 		return
@@ -47,7 +46,7 @@ func UploadPropertyImages(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("upload file err: %s", err.Error())})
 			return
 		}
-		
+
 		newImage := models.PropertyImage{
 			PropertyID: property.ID,
 			URL:        urlPath,
@@ -61,7 +60,7 @@ func UploadPropertyImages(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":  "Files uploaded successfully",
-		"images": newImages,
+		"message": "Files uploaded successfully",
+		"images":  newImages,
 	})
-} 
+}

@@ -9,7 +9,6 @@ import (
 	"my-property/go-service/pubsub"
 	"my-property/go-service/services"
 	"my-property/go-service/utils"
-	"net/http"
 	"strings"
 	"time"
 
@@ -27,10 +26,10 @@ var financialResolvers *FinancialResolvers
 // InitializeResolvers initializes all resolvers with their dependencies
 func InitializeResolvers(financialService *services.FinancialService) {
 	financialResolvers = NewFinancialResolvers(financialService)
-	init()
+	initializeSchema()
 }
 
-func init() {
+func initializeSchema() {
 	commentType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Comment",
 		Fields: graphql.Fields{
@@ -50,8 +49,8 @@ func init() {
 					return nil, nil
 				},
 			},
-			"createdAt":  &graphql.Field{Type: graphql.String},
-			"updatedAt":  &graphql.Field{Type: graphql.String},
+			"createdAt": &graphql.Field{Type: graphql.String},
+			"updatedAt": &graphql.Field{Type: graphql.String},
 		},
 	})
 
@@ -87,8 +86,8 @@ func init() {
 					return nil, nil
 				},
 			},
-			"isFeatured": &graphql.Field{Type: graphql.Boolean},
-			"views":      &graphql.Field{Type: graphql.Int},
+			"isFeatured":     &graphql.Field{Type: graphql.Boolean},
+			"views":          &graphql.Field{Type: graphql.Int},
 			"favoritesCount": &graphql.Field{Type: graphql.Int},
 			"comments": &graphql.Field{
 				Type: graphql.NewList(commentType),
@@ -162,34 +161,34 @@ func init() {
 					"filter": &graphql.ArgumentConfig{Type: graphql.NewInputObject(graphql.InputObjectConfig{
 						Name: "PropertyFilterInputArg",
 						Fields: graphql.InputObjectConfigFieldMap{
-							"isVerified": &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
-							"listedBy": &graphql.InputObjectFieldConfig{Type: graphql.String},
+							"isVerified":    &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
+							"listedBy":      &graphql.InputObjectFieldConfig{Type: graphql.String},
 							"ownershipType": &graphql.InputObjectFieldConfig{Type: graphql.String},
-							"rentalPeriod": &graphql.InputObjectFieldConfig{Type: graphql.String},
-							"tags": &graphql.InputObjectFieldConfig{Type: graphql.NewList(graphql.String)},
-							"neighborhood": &graphql.InputObjectFieldConfig{Type: graphql.String},
-							"buildingName": &graphql.InputObjectFieldConfig{Type: graphql.String},
-							"minPrice": &graphql.InputObjectFieldConfig{Type: graphql.Float},
-							"maxPrice": &graphql.InputObjectFieldConfig{Type: graphql.Float},
-							"minBedrooms": &graphql.InputObjectFieldConfig{Type: graphql.Int},
-							"maxBedrooms": &graphql.InputObjectFieldConfig{Type: graphql.Int},
-							"minBathrooms": &graphql.InputObjectFieldConfig{Type: graphql.Int},
-							"maxBathrooms": &graphql.InputObjectFieldConfig{Type: graphql.Int},
-							"minArea": &graphql.InputObjectFieldConfig{Type: graphql.Float},
-							"maxArea": &graphql.InputObjectFieldConfig{Type: graphql.Float},
-							"furnished": &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
-							"status": &graphql.InputObjectFieldConfig{Type: graphql.String},
-							"type": &graphql.InputObjectFieldConfig{Type: graphql.String},
-							"ratingMin": &graphql.InputObjectFieldConfig{Type: graphql.Float},
-							"ratingMax": &graphql.InputObjectFieldConfig{Type: graphql.Float},
-							"isFeatured": &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
-							"boosted": &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
+							"rentalPeriod":  &graphql.InputObjectFieldConfig{Type: graphql.String},
+							"tags":          &graphql.InputObjectFieldConfig{Type: graphql.NewList(graphql.String)},
+							"neighborhood":  &graphql.InputObjectFieldConfig{Type: graphql.String},
+							"buildingName":  &graphql.InputObjectFieldConfig{Type: graphql.String},
+							"minPrice":      &graphql.InputObjectFieldConfig{Type: graphql.Float},
+							"maxPrice":      &graphql.InputObjectFieldConfig{Type: graphql.Float},
+							"minBedrooms":   &graphql.InputObjectFieldConfig{Type: graphql.Int},
+							"maxBedrooms":   &graphql.InputObjectFieldConfig{Type: graphql.Int},
+							"minBathrooms":  &graphql.InputObjectFieldConfig{Type: graphql.Int},
+							"maxBathrooms":  &graphql.InputObjectFieldConfig{Type: graphql.Int},
+							"minArea":       &graphql.InputObjectFieldConfig{Type: graphql.Float},
+							"maxArea":       &graphql.InputObjectFieldConfig{Type: graphql.Float},
+							"furnished":     &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
+							"status":        &graphql.InputObjectFieldConfig{Type: graphql.String},
+							"type":          &graphql.InputObjectFieldConfig{Type: graphql.String},
+							"ratingMin":     &graphql.InputObjectFieldConfig{Type: graphql.Float},
+							"ratingMax":     &graphql.InputObjectFieldConfig{Type: graphql.Float},
+							"isFeatured":    &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
+							"boosted":       &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
 						},
 					})},
-					"sortBy": &graphql.ArgumentConfig{Type: graphql.String},
+					"sortBy":    &graphql.ArgumentConfig{Type: graphql.String},
 					"sortOrder": &graphql.ArgumentConfig{Type: graphql.String},
-					"limit": &graphql.ArgumentConfig{Type: graphql.Int},
-					"offset": &graphql.ArgumentConfig{Type: graphql.Int},
+					"limit":     &graphql.ArgumentConfig{Type: graphql.Int},
+					"offset":    &graphql.ArgumentConfig{Type: graphql.Int},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					var properties []models.Property
@@ -296,7 +295,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.GetSaleTransactions(p)
+					return financialResolvers.GetSaleTransactions(p.Context)
 				},
 			},
 			"getLeaseContracts": &graphql.Field{
@@ -340,7 +339,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.GetLeaseContracts(p)
+					return financialResolvers.GetLeaseContracts(p.Context)
 				},
 			},
 			"getOffers": &graphql.Field{
@@ -377,7 +376,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.GetOffers(p)
+					return financialResolvers.GetOffers(p.Context)
 				},
 			},
 		},
@@ -401,9 +400,17 @@ func init() {
 					if err != nil {
 						return nil, fmt.Errorf("translation error: %v", err)
 					}
+					titleJSON, err := json.Marshal(titleTranslations)
+					if err != nil {
+						return nil, fmt.Errorf("could not marshal title: %v", err)
+					}
 					descriptionTranslations, err := utils.TranslateText(description, "en", langs)
 					if err != nil {
 						return nil, fmt.Errorf("translation error: %v", err)
+					}
+					descriptionJSON, err := json.Marshal(descriptionTranslations)
+					if err != nil {
+						return nil, fmt.Errorf("could not marshal description: %v", err)
 					}
 
 					amenities, _ := input["amenities"].([]interface{})
@@ -419,8 +426,8 @@ func init() {
 					}
 
 					property := models.Property{
-						Title:       titleTranslations,
-						Description: descriptionTranslations,
+						Title:       string(titleJSON),
+						Description: string(descriptionJSON),
 						Type:        input["type"].(string),
 						Status:      input["status"].(string),
 						Price:       input["price"].(float64),
@@ -461,11 +468,11 @@ func init() {
 						FloorPlanUrl:      getString(input, "floorPlanUrl"),
 						Documents:         joinStringArray(input, "documents"),
 						// Analytics & Engagement
-						InquiryCount:  getInt(input, "inquiryCount"),
-						LastViewedAt:  parseTimePtr(getString(input, "lastViewedAt")),
-						BoostedUntil:  parseTimePtr(getString(input, "boostedUntil")),
-						Rating:        getFloat(input, "rating"),
-						Tags:          joinStringArray(input, "tags"),
+						InquiryCount: getInt(input, "inquiryCount"),
+						LastViewedAt: parseTimePtr(getString(input, "lastViewedAt")),
+						BoostedUntil: parseTimePtr(getString(input, "boostedUntil")),
+						Rating:       getFloat(input, "rating"),
+						Tags:         joinStringArray(input, "tags"),
 					}
 					database.DB.Create(&property)
 					return property, nil
@@ -491,14 +498,22 @@ func init() {
 						if err != nil {
 							return nil, fmt.Errorf("translation error: %v", err)
 						}
-						property.Title = titleTranslations
+						titleJSON, err := json.Marshal(titleTranslations)
+						if err != nil {
+							return nil, fmt.Errorf("could not marshal title: %v", err)
+						}
+						property.Title = string(titleJSON)
 					}
 					if description, ok := input["description"]; ok {
 						descriptionTranslations, err := utils.TranslateText(description.(string), "en", langs)
 						if err != nil {
 							return nil, fmt.Errorf("translation error: %v", err)
 						}
-						property.Description = descriptionTranslations
+						descriptionJSON, err := json.Marshal(descriptionTranslations)
+						if err != nil {
+							return nil, fmt.Errorf("could not marshal description: %v", err)
+						}
+						property.Description = string(descriptionJSON)
 					}
 					if pType, ok := input["type"]; ok {
 						property.Type = pType.(string)
@@ -578,7 +593,7 @@ func init() {
 					if neighborhood, ok := input["neighborhood"]; ok {
 						property.Neighborhood = neighborhood.(string)
 					}
-					if nearbyLandmarks, ok := input["nearbyLandmarks"]; ok {
+					if _, ok := input["nearbyLandmarks"]; ok {
 						property.NearbyLandmarks = joinStringArray(input, "nearbyLandmarks")
 					}
 					if floorNumber, ok := input["floorNumber"]; ok {
@@ -616,7 +631,7 @@ func init() {
 					if floorPlanUrl, ok := input["floorPlanUrl"]; ok {
 						property.FloorPlanUrl = floorPlanUrl.(string)
 					}
-					if documents, ok := input["documents"]; ok {
+					if _, ok := input["documents"]; ok {
 						property.Documents = joinStringArray(input, "documents")
 					}
 					// Analytics & Engagement
@@ -632,7 +647,7 @@ func init() {
 					if rating, ok := input["rating"]; ok {
 						property.Rating = rating.(float64)
 					}
-					if tags, ok := input["tags"]; ok {
+					if _, ok := input["tags"]; ok {
 						property.Tags = joinStringArray(input, "tags")
 					}
 
@@ -870,7 +885,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.CreateSaleTransaction(p)
+					return financialResolvers.CreateSaleTransaction(p.Context)
 				},
 			},
 			"updateSaleTransactionStatus": &graphql.Field{
@@ -903,7 +918,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.UpdateSaleTransactionStatus(p)
+					return financialResolvers.UpdateSaleTransactionStatus(p.Context)
 				},
 			},
 			"createLeaseContract": &graphql.Field{
@@ -940,21 +955,21 @@ func init() {
 					"input": &graphql.ArgumentConfig{Type: graphql.NewInputObject(graphql.InputObjectConfig{
 						Name: "CreateLeaseContractInput",
 						Fields: graphql.InputObjectConfigFieldMap{
-							"propertyId":       &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.ID)},
-							"tenantId":         &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.ID)},
-							"landlordId":       &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.ID)},
-							"agentId":          &graphql.InputObjectFieldConfig{Type: graphql.ID},
-							"durationMonths":   &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Int)},
-							"startDate":        &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},
-							"monthlyRent":      &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Float)},
-							"depositAmount":    &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Float)},
-							"paymentFrequency": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},
+							"propertyId":        &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.ID)},
+							"tenantId":          &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.ID)},
+							"landlordId":        &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.ID)},
+							"agentId":           &graphql.InputObjectFieldConfig{Type: graphql.ID},
+							"durationMonths":    &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Int)},
+							"startDate":         &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},
+							"monthlyRent":       &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Float)},
+							"depositAmount":     &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Float)},
+							"paymentFrequency":  &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.String)},
 							"utilitiesIncluded": &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
-							"petAllowed":       &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
-							"furnished":        &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
-							"lateFeeAmount":    &graphql.InputObjectFieldConfig{Type: graphql.Float},
-							"gracePeriodDays":  &graphql.InputObjectFieldConfig{Type: graphql.Int},
-							"notes":            &graphql.InputObjectFieldConfig{Type: graphql.String},
+							"petAllowed":        &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
+							"furnished":         &graphql.InputObjectFieldConfig{Type: graphql.Boolean},
+							"lateFeeAmount":     &graphql.InputObjectFieldConfig{Type: graphql.Float},
+							"gracePeriodDays":   &graphql.InputObjectFieldConfig{Type: graphql.Int},
+							"notes":             &graphql.InputObjectFieldConfig{Type: graphql.String},
 						},
 					})},
 				},
@@ -962,7 +977,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.CreateLeaseContract(p)
+					return financialResolvers.CreateLeaseContract(p.Context)
 				},
 			},
 			"updateLeaseStatus": &graphql.Field{
@@ -1003,7 +1018,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.UpdateLeaseStatus(p)
+					return financialResolvers.UpdateLeaseStatus(p.Context)
 				},
 			},
 			"createLeasePayment": &graphql.Field{
@@ -1040,7 +1055,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.CreateLeasePayment(p)
+					return financialResolvers.CreateLeasePayment(p.Context)
 				},
 			},
 			"updatePaymentStatus": &graphql.Field{
@@ -1068,7 +1083,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.UpdatePaymentStatus(p)
+					return financialResolvers.UpdatePaymentStatus(p.Context)
 				},
 			},
 			"createOffer": &graphql.Field{
@@ -1121,7 +1136,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.CreateOffer(p)
+					return financialResolvers.CreateOffer(p.Context)
 				},
 			},
 			"useOffer": &graphql.Field{
@@ -1145,26 +1160,26 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.UseOffer(p)
+					return financialResolvers.UseOffer(p.Context)
 				},
 			},
 			"generateFinancialReport": &graphql.Field{
 				Type: graphql.NewObject(graphql.ObjectConfig{
 					Name: "FinancialReport",
 					Fields: graphql.Fields{
-						"id":              &graphql.Field{Type: graphql.ID},
-						"reportType":      &graphql.Field{Type: graphql.String},
-						"periodStart":     &graphql.Field{Type: graphql.String},
-						"periodEnd":       &graphql.Field{Type: graphql.String},
-						"totalSales":      &graphql.Field{Type: graphql.Float},
-						"totalRentals":    &graphql.Field{Type: graphql.Float},
-						"totalRevenue":    &graphql.Field{Type: graphql.Float},
+						"id":               &graphql.Field{Type: graphql.ID},
+						"reportType":       &graphql.Field{Type: graphql.String},
+						"periodStart":      &graphql.Field{Type: graphql.String},
+						"periodEnd":        &graphql.Field{Type: graphql.String},
+						"totalSales":       &graphql.Field{Type: graphql.Float},
+						"totalRentals":     &graphql.Field{Type: graphql.Float},
+						"totalRevenue":     &graphql.Field{Type: graphql.Float},
 						"totalCommissions": &graphql.Field{Type: graphql.Float},
-						"totalTaxes":      &graphql.Field{Type: graphql.Float},
-						"totalFees":       &graphql.Field{Type: graphql.Float},
-						"reportData":      &graphql.Field{Type: graphql.String},
-						"generatedAt":     &graphql.Field{Type: graphql.String},
-						"generatedBy":     &graphql.Field{Type: graphql.ID},
+						"totalTaxes":       &graphql.Field{Type: graphql.Float},
+						"totalFees":        &graphql.Field{Type: graphql.Float},
+						"reportData":       &graphql.Field{Type: graphql.String},
+						"generatedAt":      &graphql.Field{Type: graphql.String},
+						"generatedBy":      &graphql.Field{Type: graphql.ID},
 					},
 				}),
 				Args: graphql.FieldConfigArgument{
@@ -1177,7 +1192,7 @@ func init() {
 					if financialResolvers == nil {
 						return nil, fmt.Errorf("financial service not initialized")
 					}
-					return financialResolvers.GenerateFinancialReport(p)
+					return financialResolvers.GenerateFinancialReport(p.Context)
 				},
 			},
 		},
@@ -1399,7 +1414,7 @@ func applyPropertyFilters(db *gorm.DB, filter map[string]interface{}) *gorm.DB {
 	if v, ok := filter["isFeatured"]; ok {
 		db = db.Where("is_featured = ?", v)
 	}
-	if v, ok := filter["boosted"]; ok {
+	if _, ok := filter["boosted"]; ok {
 		db = db.Where("boosted_until > ?", time.Now())
 	}
 	if v, ok := filter["availabilityDate"]; ok {
@@ -1466,4 +1481,4 @@ func applyPropertyFilters(db *gorm.DB, filter map[string]interface{}) *gorm.DB {
 		}
 	}
 	return db
-} 
+}

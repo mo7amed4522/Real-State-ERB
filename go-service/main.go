@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"log"
 	"my-property/go-service/database"
 	"my-property/go-service/graphql"
@@ -11,9 +10,10 @@ import (
 	"my-property/go-service/services"
 	"my-property/go-service/utils"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/graphql-go/handler"
+	"github.com/joho/godotenv"
 	"nhooyr.io/websocket"
 )
 
@@ -87,13 +87,22 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using environment variables")
+	}
+
 	// Initialize Database
 	database.InitDB()
 
 	// Initialize services
-	encryptionService := utils.NewEncryptionService()
+	encryptionKey := os.Getenv("ENCRYPTION_SECRET_KEY")
+	if encryptionKey == "" {
+		log.Fatal("ENCRYPTION_SECRET_KEY environment variable not set")
+	}
+	encryptionService := utils.NewEncryptionService(encryptionKey)
 	financialService := services.NewFinancialService(database.DB, encryptionService)
-	
+
 	// Initialize GraphQL resolvers with services
 	graphql.InitializeResolvers(financialService)
 
@@ -117,4 +126,4 @@ func main() {
 	// Serve the application
 	log.Println("Go server is running on port 8080")
 	log.Fatal(router.Run(":8080"))
-} 
+}

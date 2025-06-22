@@ -4,43 +4,41 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"mime/multipart"
-	"my-property/go-service/database"
 	"my-property/go-service/models"
 	"my-property/go-service/utils"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 	"time"
 
 	"gorm.io/gorm"
 )
 
 type ChatService struct {
-	db             *gorm.DB
-	kafkaService   *utils.KafkaService
+	db                *gorm.DB
+	kafkaService      *utils.KafkaService
 	encryptionService *utils.EncryptionService
-	uploadDir      string
-	aiServiceURL   string
+	uploadDir         string
+	aiServiceURL      string
 }
 
 // Moderation types
 type ModerationRequest struct {
-	Content  string `json:"content,omitempty"`
-	ImageURL string `json:"image_url,omitempty"`
+	Content   string `json:"content,omitempty"`
+	ImageURL  string `json:"image_url,omitempty"`
 	ImagePath string `json:"image_path,omitempty"`
-	UserID   uint   `json:"user_id"`
-	UserType string `json:"user_type"`
-	RoomID   uint   `json:"room_id"`
+	UserID    uint   `json:"user_id"`
+	UserType  string `json:"user_type"`
+	RoomID    uint   `json:"room_id"`
 }
 
 type ModerationResponse struct {
-	Allowed bool   `json:"allowed"`
-	Reason  string `json:"reason,omitempty"`
+	Allowed  bool   `json:"allowed"`
+	Reason   string `json:"reason,omitempty"`
 	Severity string `json:"severity,omitempty"` // "low", "medium", "high"
-	Flagged bool   `json:"flagged"`
+	Flagged  bool   `json:"flagged"`
 }
 
 func NewChatService(db *gorm.DB, kafkaService *utils.KafkaService, encryptionService *utils.EncryptionService) *ChatService {
@@ -50,12 +48,16 @@ func NewChatService(db *gorm.DB, kafkaService *utils.KafkaService, encryptionSer
 	}
 
 	return &ChatService{
-		db:               db,
-		kafkaService:     kafkaService,
+		db:                db,
+		kafkaService:      kafkaService,
 		encryptionService: encryptionService,
-		uploadDir:        uploadDir,
-		aiServiceURL:     "http://python-ai-service:8000",
+		uploadDir:         uploadDir,
+		aiServiceURL:      "http://python-ai-service:8000",
 	}
+}
+
+func (s *ChatService) KafkaService() *utils.KafkaService {
+	return s.kafkaService
 }
 
 // Room Management
@@ -78,12 +80,12 @@ func (s *ChatService) CreateRoom(name, description, roomType string, createdBy u
 	// Add participants
 	for _, userID := range participantIDs {
 		participant := &models.ChatParticipant{
-			RoomID:    room.ID,
-			UserID:    userID,
-			UserType:  "user", // Default to user, can be extended
-			Role:      "member",
-			JoinedAt:  time.Now(),
-			IsActive:  true,
+			RoomID:   room.ID,
+			UserID:   userID,
+			UserType: "user", // Default to user, can be extended
+			Role:     "member",
+			JoinedAt: time.Now(),
+			IsActive: true,
 		}
 		if err := tx.Create(participant).Error; err != nil {
 			tx.Rollback()
@@ -93,12 +95,12 @@ func (s *ChatService) CreateRoom(name, description, roomType string, createdBy u
 
 	// Add creator as admin
 	creatorParticipant := &models.ChatParticipant{
-		RoomID:    room.ID,
-		UserID:    createdBy,
-		UserType:  "user",
-		Role:      "admin",
-		JoinedAt:  time.Now(),
-		IsActive:  true,
+		RoomID:   room.ID,
+		UserID:   createdBy,
+		UserType: "user",
+		Role:     "admin",
+		JoinedAt: time.Now(),
+		IsActive: true,
 	}
 	if err := tx.Create(creatorParticipant).Error; err != nil {
 		tx.Rollback()
@@ -159,19 +161,19 @@ func (s *ChatService) SendMessage(roomID, senderID uint, senderType, content, me
 	}
 
 	message := &models.ChatMessage{
-		RoomID:            roomID,
-		SenderID:          senderID,
-		SenderType:        senderType,
-		Content:           content,
-		MessageType:       messageType,
-		ReplyToID:         replyToID,
-		ReferenceID:       referenceID,
-		IsEdited:          false,
-		IsDeleted:         false,
-		IsModerated:       true,
-		ModerationStatus:  moderationStatus,
-		CreatedAt:         time.Now(),
-		UpdatedAt:         time.Now(),
+		RoomID:           roomID,
+		SenderID:         senderID,
+		SenderType:       senderType,
+		Content:          content,
+		MessageType:      messageType,
+		ReplyToID:        replyToID,
+		ReferenceID:      referenceID,
+		IsEdited:         false,
+		IsDeleted:        false,
+		IsModerated:      true,
+		ModerationStatus: moderationStatus,
+		CreatedAt:        time.Now(),
+		UpdatedAt:        time.Now(),
 	}
 
 	if err := s.db.Create(message).Error; err != nil {
@@ -251,9 +253,9 @@ func (s *ChatService) DeleteMessage(messageID, senderID uint) error {
 }
 
 // File Upload Management
-func (s *ChatService) UploadFile(messageID uint, file *multipart.FileHeader) (*models.ChatAttachment, error) {
+func (s *ChatService) UploadFile(messageID uint, fileHeader *multipart.FileHeader, file io.Reader) (*models.ChatAttachment, error) {
 	// Create unique filename
-	ext := filepath.Ext(file.Filename)
+	ext := filepath.Ext(fileHeader.Filename)
 	filename := fmt.Sprintf("%d_%d%s", messageID, time.Now().Unix(), ext)
 	filePath := filepath.Join(s.uploadDir, filename)
 
@@ -262,12 +264,6 @@ func (s *ChatService) UploadFile(messageID uint, file *multipart.FileHeader) (*m
 		return nil, err
 	}
 
-	src, err := file.Open()
-	if err != nil {
-		return nil, err
-	}
-	defer src.Close()
-
 	dst, err := os.Create(filePath)
 	if err != nil {
 		return nil, err
@@ -275,7 +271,7 @@ func (s *ChatService) UploadFile(messageID uint, file *multipart.FileHeader) (*m
 	defer dst.Close()
 
 	// Copy file content
-	if _, err = dst.ReadFrom(src); err != nil {
+	if _, err = io.Copy(dst, file); err != nil {
 		return nil, err
 	}
 
@@ -297,7 +293,7 @@ func (s *ChatService) UploadFile(messageID uint, file *multipart.FileHeader) (*m
 	}
 
 	// Log moderation event
-	s.LogModerationEvent(message.SenderID, message.SenderType, message.RoomID, "File: "+file.Filename, moderationResult)
+	s.LogModerationEvent(message.SenderID, message.SenderType, message.RoomID, "File: "+fileHeader.Filename, moderationResult)
 
 	// Check if file is allowed
 	if !moderationResult.Allowed {
@@ -324,15 +320,15 @@ func (s *ChatService) UploadFile(messageID uint, file *multipart.FileHeader) (*m
 
 	// Create attachment record
 	attachment := &models.ChatAttachment{
-		MessageID:         messageID,
-		FileName:          file.Filename,
-		FileType:          file.Header.Get("Content-Type"),
-		FileSize:          file.Size,
-		EncryptedPath:     encryptedPath,
-		EncryptedKey:      encryptedKey,
-		UploadedAt:        time.Now(),
-		IsModerated:       true,
-		ModerationStatus:  moderationStatus,
+		MessageID:        messageID,
+		FileName:         fileHeader.Filename,
+		FileType:         fileHeader.Header.Get("Content-Type"),
+		FileSize:         fileHeader.Size,
+		EncryptedPath:    encryptedPath,
+		EncryptedKey:     encryptedKey,
+		UploadedAt:       time.Now(),
+		IsModerated:      true,
+		ModerationStatus: moderationStatus,
 	}
 
 	if err := s.db.Create(attachment).Error; err != nil {
@@ -479,53 +475,53 @@ func (s *ChatService) SearchMessages(roomID uint, query string) ([]models.ChatMe
 // Get message statistics
 func (s *ChatService) GetMessageStats(roomID uint) (map[string]interface{}, error) {
 	var stats map[string]interface{}
-	
+
 	var totalMessages int64
 	s.db.Model(&models.ChatMessage{}).Where("room_id = ? AND is_deleted = ?", roomID, false).Count(&totalMessages)
-	
+
 	var todayMessages int64
 	today := time.Now().Truncate(24 * time.Hour)
 	s.db.Model(&models.ChatMessage{}).Where("room_id = ? AND is_deleted = ? AND created_at >= ?", roomID, false, today).Count(&todayMessages)
-	
+
 	var totalFiles int64
 	s.db.Model(&models.ChatAttachment{}).Joins("JOIN chat_messages ON chat_attachments.message_id = chat_messages.id").
 		Where("chat_messages.room_id = ? AND chat_messages.is_deleted = ?", roomID, false).Count(&totalFiles)
-	
+
 	stats = map[string]interface{}{
-		"total_messages":  totalMessages,
-		"today_messages":  todayMessages,
-		"total_files":     totalFiles,
+		"total_messages": totalMessages,
+		"today_messages": todayMessages,
+		"total_files":    totalFiles,
 	}
-	
+
 	return stats, nil
 }
 
 // AI Moderation
 func (s *ChatService) ModerateMessage(content, imagePath string, userID uint, userType string, roomID uint) (*ModerationResponse, error) {
 	reqBody := ModerationRequest{
-		Content:  content,
+		Content:   content,
 		ImagePath: imagePath,
-		UserID:   userID,
-		UserType: userType,
-		RoomID:   roomID,
+		UserID:    userID,
+		UserType:  userType,
+		RoomID:    roomID,
 	}
-	
+
 	data, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal moderation request: %v", err)
 	}
-	
+
 	resp, err := http.Post(s.aiServiceURL+"/moderate", "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		return nil, fmt.Errorf("AI service error: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	var result ModerationResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("failed to decode AI response: %v", err)
 	}
-	
+
 	return &result, nil
 }
 
@@ -542,6 +538,6 @@ func (s *ChatService) LogModerationEvent(userID uint, userType string, roomID ui
 		Flagged:   moderationResult.Flagged,
 		CreatedAt: time.Now(),
 	}
-	
+
 	return s.db.Create(logEntry).Error
-} 
+}
